@@ -21,18 +21,13 @@ export default function TestPage() {
   const [timeRemaining, setTimeRemaining] = useState(2700); // 45 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Import the complete 220-item PID-5 test
-  let testData;
-  try {
-    // Dynamic import to handle potential loading issues
-    const { PID5_COMPLETE } = await import("@/data/pid5-complete");
-    testData = PID5_COMPLETE && PID5_COMPLETE.items && PID5_COMPLETE.items.length === 220
-      ? PID5_COMPLETE
-      : PID5_FALLBACK;
-  } catch (error) {
-    console.warn('Failed to load complete PID-5, using fallback:', error);
-    testData = PID5_FALLBACK;
-  }
+  // Use complete 220-item PID-5 test with fallback safety
+  const testData = (PID5_COMPLETE &&
+                   PID5_COMPLETE.items &&
+                   Array.isArray(PID5_COMPLETE.items) &&
+                   PID5_COMPLETE.items.length === 220)
+                   ? PID5_COMPLETE
+                   : PID5_FALLBACK;
 
   // Safety check
   if (!testData || !testData?.items || !Array.isArray(testData.items) || testData.items.length === 0) {
