@@ -194,6 +194,17 @@ export function processPID5CompleteResults(
         score = 3 - score;
       }
 
+      // Assicurati che i domini e le faccette esistano
+      if (!domainScores[item.domain]) {
+        domainScores[item.domain] = [];
+      }
+      if (!facetScores[item.domain]) {
+        facetScores[item.domain] = {};
+      }
+      if (!facetScores[item.domain][item.facet]) {
+        facetScores[item.domain][item.facet] = [];
+      }
+
       domainScores[item.domain].push(score);
       facetScores[item.domain][item.facet].push(score);
     }
