@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { PID5_COMPLETE, type PID5Item } from "@/data/pid5-complete";
+import { PID5_FALLBACK } from "@/data/pid5-fallback";
 
 
 
@@ -20,13 +21,15 @@ export default function TestPage() {
   const [timeRemaining, setTimeRemaining] = useState(2700); // 45 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Get PID-5 complete test data
+  // Get PID-5 complete test data with fallback
   let testData;
   try {
-    testData = PID5_COMPLETE;
+    testData = PID5_COMPLETE && PID5_COMPLETE.items && PID5_COMPLETE.items.length > 0
+      ? PID5_COMPLETE
+      : PID5_FALLBACK;
   } catch (error) {
-    console.error('Error loading PID5_COMPLETE:', error);
-    testData = null;
+    console.error('Error loading PID5_COMPLETE, using fallback:', error);
+    testData = PID5_FALLBACK;
   }
 
   // Safety check
