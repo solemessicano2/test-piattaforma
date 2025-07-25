@@ -83,7 +83,7 @@ export default function ResultsPage() {
     }
   };
 
-  const averageTScore = pid5Profile ? pid5Profile.results.reduce((sum, r) => sum + r.tScore, 0) / pid5Profile.results.length : 50;
+  const averageTScore = pid5Profile ? pid5Profile.globalSeverity : 50;
 
   if (!answers || !testData) {
     return (
