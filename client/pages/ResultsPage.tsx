@@ -100,6 +100,106 @@ export default function ResultsPage() {
 
   const averageTScore = pid5Profile ? pid5Profile.globalSeverity : 50;
 
+  const handleDownloadPDF = () => {
+    // Create a clean version for printing
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const printContent = generatePrintableHTML();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+
+    // Wait for content to load then trigger print
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  };
+
+  const generatePrintableHTML = () => {
+    if (!pid5Profile) return '';
+
+    const currentDate = new Date().toLocaleDateString('it-IT');
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>PID-5 Report - ${currentDate}</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+          h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+          h2 { color: #1e40af; margin-top: 30px; }
+          h3 { color: #1e3a8a; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .risk-level { font-size: 18px; font-weight: bold; padding: 10px; border-radius: 5px; text-align: center; margin: 20px 0; }
+          .risk-basso { background-color: #dcfce7; color: #166534; }
+          .risk-moderato { background-color: #fef3c7; color: #92400e; }
+          .risk-elevato { background-color: #fed7d7; color: #c53030; }
+          .risk-molto-elevato { background-color: #fecaca; color: #991b1b; }
+          .domain-result { margin-bottom: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 5px; }
+          .domain-title { font-weight: bold; color: #1e40af; margin-bottom: 10px; }
+          .facet-list { margin-left: 20px; }
+          .clinical-note { background-color: #f3f4f6; padding: 10px; margin: 10px 0; border-left: 4px solid #3b82f6; }
+          .recommendation { background-color: #ecfdf5; padding: 10px; margin: 10px 0; border-left: 4px solid #10b981; }
+          @media print { body { margin: 0; padding: 15px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>PID-5 - Report dei Risultati</h1>
+          <p><strong>Inventario della Personalità per DSM-5</strong></p>
+          <p>Data: ${currentDate}</p>
+        </div>
+
+        <div class="risk-level risk-${pid5Profile.overallRisk.toLowerCase().replace(' ', '-')}">
+          Livello di Rischio Complessivo: ${pid5Profile.overallRisk}
+        </div>
+
+        <h2>Risultati per Domini</h2>
+        ${pid5Profile.domainResults.map(domain => `
+          <div class="domain-result">
+            <div class="domain-title">${domain.domain} (T-Score: ${domain.tScore})</div>
+            <p><strong>Livello:</strong> ${domain.level}</p>
+            <p>${domain.interpretation}</p>
+            ${domain.facets.filter(f => f.clinicalSignificance).length > 0 ? `
+              <div class="facet-list">
+                <strong>Faccette Clinicamente Elevate:</strong>
+                <ul>
+                  ${domain.facets.filter(f => f.clinicalSignificance).map(facet => `
+                    <li>${facet.facet} (T=${facet.tScore})</li>
+                  `).join('')}
+                </ul>
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+
+        <h2>Note Cliniche</h2>
+        ${pid5Profile.clinicalNotes.map(note => `
+          <div class="clinical-note">${note}</div>
+        `).join('')}
+
+        <h2>Considerazioni Diagnostiche</h2>
+        ${pid5Profile.diagnosticConsiderations.map(consideration => `
+          <div class="clinical-note">${consideration}</div>
+        `).join('')}
+
+        <h2>Raccomandazioni</h2>
+        ${pid5Profile.recommendations.map(rec => `
+          <div class="recommendation">${rec}</div>
+        `).join('')}
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
+          <p><strong>Importante:</strong> Questi risultati sono generati automaticamente e non sostituiscono una valutazione clinica professionale. Consultare sempre uno psicologo qualificato per interpretazione e pianificazione terapeutica.</p>
+          <p>Report generato il ${currentDate} dal sistema PID-5 TestPro</p>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+
   if (!answers || !testData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
