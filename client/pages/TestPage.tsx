@@ -79,6 +79,20 @@ export default function TestPage() {
   const progress = ((currentQuestion + 1) / testData.items.length) * 100;
   const answeredQuestions = Object.keys(answers).length;
 
+  // Safety check for currentQ
+  if (!currentQ) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <p className="text-gray-600 mb-4">Errore nel caricamento della domanda</p>
+            <Button onClick={() => navigate("/")}>Torna alla Dashboard</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Header */}
