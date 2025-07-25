@@ -109,10 +109,10 @@ export default function Index() {
               <Card key={test.id} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm">
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between mb-3">
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className={`${
-                        test.category === 'Personalità' ? 'bg-purple-100 text-purple-800' :
+                        test.category === 'Clinico' ? 'bg-red-100 text-red-800' :
                         test.category === 'Emozioni' ? 'bg-green-100 text-green-800' :
                         'bg-orange-100 text-orange-800'
                       }`}
