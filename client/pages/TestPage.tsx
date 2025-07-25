@@ -7,21 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { PID5_TEST_DATA, type PID5Question } from "@/data/pid5-test";
 
-interface Question {
-  id: number;
-  text: string;
-  options: string[];
-  category: string;
-}
 
-interface TestData {
-  id: number;
-  title: string;
-  description: string;
-  duration: number;
-  questions: Question[];
-}
 
 export default function TestPage() {
   const { testId } = useParams();
@@ -29,73 +17,11 @@ export default function TestPage() {
   
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeRemaining, setTimeRemaining] = useState(900); // 15 minutes
+  const [timeRemaining, setTimeRemaining] = useState(1500); // 25 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Mock test data
-  const testData: TestData = {
-    id: parseInt(testId || "1"),
-    title: "Test di Personalità Myers-Briggs",
-    description: "Valutazione completa della personalità basata sui 16 tipi MBTI",
-    duration: 15,
-    questions: [
-      {
-        id: 1,
-        text: "Quando incontri nuove persone, tendi a:",
-        options: [
-          "Iniziare una conversazione facilmente",
-          "Aspettare che siano loro a parlare per primi",
-          "Osservare prima di interagire",
-          "Cercare punti in comune per iniziare il dialogo"
-        ],
-        category: "Estroversione"
-      },
-      {
-        id: 2,
-        text: "Nel prendere decisioni importanti, ti basi principalmente su:",
-        options: [
-          "Dati concreti e fatti verificabili",
-          "Intuizione e sensazioni personali",
-          "Analisi logica e razionale",
-          "Impatto emotivo sulle persone coinvolte"
-        ],
-        category: "Pensiero"
-      },
-      {
-        id: 3,
-        text: "Il tuo approccio ai progetti è solitamente:",
-        options: [
-          "Pianificare tutto nei dettagli prima di iniziare",
-          "Iniziare subito e adattarsi lungo il percorso",
-          "Alternare pianificazione e azione",
-          "Coinvolgere il team nella pianificazione"
-        ],
-        category: "Giudizio"
-      },
-      {
-        id: 4,
-        text: "In situazioni di stress, tendi a:",
-        options: [
-          "Cercare il supporto di altre persone",
-          "Isolarti per riflettere da solo",
-          "Concentrarti sulla risoluzione pratica",
-          "Analizzare le emozioni coinvolte"
-        ],
-        category: "Gestione Stress"
-      },
-      {
-        id: 5,
-        text: "La tua energia aumenta maggiormente quando:",
-        options: [
-          "Sei circondato da persone energiche",
-          "Hai tempo per riflettere in silenzio",
-          "Stai lavorando su un progetto stimolante",
-          "Puoi aiutare qualcuno che ha bisogno"
-        ],
-        category: "Energia"
-      }
-    ]
-  };
+  // Get PID-5 test data
+  const testData = PID5_TEST_DATA;
 
   // Timer effect
   useEffect(() => {
@@ -186,8 +112,14 @@ export default function TestPage() {
                 </span>
                 <span className="text-gray-500">di {testData.questions.length}</span>
               </div>
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                {currentQ.category}
+              <Badge variant="outline" className={`${
+                currentQ.domain === 'Affettività Negativa' ? 'bg-red-50 text-red-700 border-red-200' :
+                currentQ.domain === 'Distacco' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                currentQ.domain === 'Antagonismo' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                currentQ.domain === 'Disinibizione' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                'bg-gray-50 text-gray-700 border-gray-200'
+              }`}>
+                {currentQ.domain}
               </Badge>
             </div>
             <Progress value={progress} className="h-3 mb-2" />
@@ -210,10 +142,11 @@ export default function TestPage() {
               onValueChange={(value) => handleAnswer(currentQ.id, value)}
               className="space-y-4"
             >
-              {currentQ.options.map((option, index) => (
+              {testData.scaleLikert.map((option, index) => (
                 <div key={index} className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all cursor-pointer">
-                  <RadioGroupItem value={option} id={`option-${index}`} />
+                  <RadioGroupItem value={index.toString()} id={`option-${index}`} />
                   <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer text-gray-700 leading-relaxed">
+                    <span className="font-medium text-blue-600 mr-2">{index}</span>
                     {option}
                   </Label>
                 </div>
