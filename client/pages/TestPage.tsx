@@ -110,6 +110,13 @@ export default function TestPage() {
       autoAnswers[item.id] = randomAnswer.toString();
     });
     setAnswers(autoAnswers);
+
+    // Go to the last question to show completion
+    const lastQuestionIndex = (testData?.items?.length || 1) - 1;
+    setCurrentQuestion(lastQuestionIndex);
+
+    // Optional: Show a confirmation
+    console.log(`Auto-filled ${Object.keys(autoAnswers).length} questions`);
   };
 
   const currentQ = testData?.items?.[currentQuestion];
