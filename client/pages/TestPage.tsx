@@ -149,6 +149,14 @@ export default function TestPage() {
             </Button>
 
             <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={autoFillAllQuestions}
+                className="bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100"
+              >
+                🎲 Auto-Fill Test
+              </Button>
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4 text-orange-500" />
                 <span
