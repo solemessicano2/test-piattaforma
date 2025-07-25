@@ -234,7 +234,7 @@ export default function TestPage() {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={answeredQuestions < testData.items.length}
+              disabled={answeredQuestions < (testData?.items?.length || 0)}
               className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600"
             >
               <CheckCircle className="w-4 h-4" />
