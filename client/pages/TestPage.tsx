@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, Clock, CheckCircle, AlertCircle } from "lucide-react";
-import { PID5_TEST_DATA, type PID5Question } from "@/data/pid5-test";
+import { PID5_COMPLETE, type PID5Item } from "@/data/pid5-complete";
 
 
 
@@ -17,11 +17,11 @@ export default function TestPage() {
   
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeRemaining, setTimeRemaining] = useState(1500); // 25 minutes
+  const [timeRemaining, setTimeRemaining] = useState(2700); // 45 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Get PID-5 test data
-  const testData = PID5_TEST_DATA;
+  // Get PID-5 complete test data
+  const testData = PID5_COMPLETE;
 
   // Timer effect
   useEffect(() => {
@@ -61,8 +61,8 @@ export default function TestPage() {
     navigate(`/results/${testId}`, { state: { answers, testData } });
   };
 
-  const currentQ = testData.questions[currentQuestion];
-  const progress = ((currentQuestion + 1) / testData.questions.length) * 100;
+  const currentQ = testData.items[currentQuestion];
+  const progress = ((currentQuestion + 1) / testData.items.length) * 100;
   const answeredQuestions = Object.keys(answers).length;
 
   return (
@@ -110,7 +110,7 @@ export default function TestPage() {
                 <span className="text-2xl font-bold text-blue-600">
                   {currentQuestion + 1}
                 </span>
-                <span className="text-gray-500">di {testData.questions.length}</span>
+                <span className="text-gray-500">di {testData.items.length}</span>
               </div>
               <Badge variant="outline" className={`${
                 currentQ.domain === 'Affettività Negativa' ? 'bg-red-50 text-red-700 border-red-200' :
@@ -168,16 +168,16 @@ export default function TestPage() {
           </Button>
 
           <div className="flex items-center space-x-4">
-            {answeredQuestions < testData.questions.length && (
+            {answeredQuestions < testData.items.length && (
               <div className="flex items-center space-x-2 text-amber-600">
                 <AlertCircle className="w-4 h-4" />
                 <span className="text-sm">
-                  {testData.questions.length - answeredQuestions} domande rimanenti
+                  {testData.items.length - answeredQuestions} domande rimanenti
                 </span>
               </div>
             )}
             
-            {answeredQuestions === testData.questions.length && (
+            {answeredQuestions === testData.items.length && (
               <div className="flex items-center space-x-2 text-green-600">
                 <CheckCircle className="w-4 h-4" />
                 <span className="text-sm">Tutte le domande completate</span>
@@ -185,7 +185,7 @@ export default function TestPage() {
             )}
           </div>
 
-          {currentQuestion < testData.questions.length - 1 ? (
+          {currentQuestion < testData.items.length - 1 ? (
             <Button
               onClick={handleNext}
               disabled={!answers[currentQ.id]}
@@ -197,7 +197,7 @@ export default function TestPage() {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={answeredQuestions < testData.questions.length}
+              disabled={answeredQuestions < testData.items.length}
               className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600"
             >
               <CheckCircle className="w-4 h-4" />
