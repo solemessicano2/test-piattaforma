@@ -21,11 +21,13 @@ export default function TestPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Get PID-5 complete test data
-  const testData = PID5_COMPLETE;
-
-  // Debug logging
-  console.log('PID5_COMPLETE:', PID5_COMPLETE);
-  console.log('testData:', testData);
+  let testData;
+  try {
+    testData = PID5_COMPLETE;
+  } catch (error) {
+    console.error('Error loading PID5_COMPLETE:', error);
+    testData = null;
+  }
 
   // Safety check
   if (!testData || !testData.items || testData.items.length === 0) {
