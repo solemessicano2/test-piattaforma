@@ -23,6 +23,10 @@ export default function TestPage() {
   // Get PID-5 complete test data
   const testData = PID5_COMPLETE;
 
+  // Debug logging
+  console.log('PID5_COMPLETE:', PID5_COMPLETE);
+  console.log('testData:', testData);
+
   // Safety check
   if (!testData || !testData.items || testData.items.length === 0) {
     return (
