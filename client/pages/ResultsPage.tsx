@@ -31,7 +31,7 @@ export default function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(true);
-  const [pid5Profile, setPid5Profile] = useState<PID5Profile | null>(null);
+  const [pid5Profile, setPid5Profile] = useState<PID5CompleteProfile | null>(null);
   
   // Get data from navigation state
   const { answers, testData } = location.state || {};
