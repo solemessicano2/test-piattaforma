@@ -668,6 +668,7 @@ export default function ResultsPage() {
           <Button
             size="lg"
             className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600"
+            onClick={handleDownloadPDF}
           >
             <Download className="w-5 h-5 mr-2" />
             Scarica Report Completo
