@@ -297,7 +297,7 @@ export default function ResultsPage() {
           <TabsContent value="domains">
             {pid5Profile && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pid5Profile.results.map((result, index) => (
+                {pid5Profile.domainResults.map((result, index) => (
                   <Card key={index} className={`border-2 ${getDomainColor(result.domain)} bg-white/90`}>
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg">{result.domain}</CardTitle>
