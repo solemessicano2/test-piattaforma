@@ -29,6 +29,9 @@ export default function TestPage() {
                    ? PID5_COMPLETE
                    : PID5_FALLBACK;
 
+  // Debug log to verify which dataset is being used
+  console.log(`Using test data with ${testData?.items?.length || 0} items:`, testData?.title);
+
   // Safety check
   if (!testData || !testData?.items || !Array.isArray(testData.items) || testData.items.length === 0) {
     return (
