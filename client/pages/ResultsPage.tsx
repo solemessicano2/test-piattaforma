@@ -7,7 +7,10 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { processPID5CompleteResults, type PID5CompleteProfile } from "@/utils/pid5-complete-scoring";
+import {
+  processPID5CompleteResults,
+  type PID5CompleteProfile,
+} from "@/utils/pid5-complete-scoring";
 import {
   ArrowLeft,
   Download,
@@ -21,18 +24,18 @@ import {
   CheckCircle,
   BarChart3,
   AlertTriangle,
-  Shield
+  Shield,
 } from "lucide-react";
-
-
 
 export default function ResultsPage() {
   const { testId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(true);
-  const [pid5Profile, setPid5Profile] = useState<PID5CompleteProfile | null>(null);
-  
+  const [pid5Profile, setPid5Profile] = useState<PID5CompleteProfile | null>(
+    null,
+  );
+
   // Get data from navigation state
   const { answers, testData } = location.state || {};
 
@@ -53,7 +56,9 @@ export default function ResultsPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
-            <p className="text-gray-600 mb-4">Errore nell'elaborazione dei risultati</p>
+            <p className="text-gray-600 mb-4">
+              Errore nell'elaborazione dei risultati
+            </p>
             <Link to="/">
               <Button>Torna alla Dashboard</Button>
             </Link>
@@ -65,21 +70,31 @@ export default function ResultsPage() {
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'Molto Elevato': return 'border-red-500 bg-red-50';
-      case 'Elevato': return 'border-orange-500 bg-orange-50';
-      case 'Moderato': return 'border-yellow-500 bg-yellow-50';
-      default: return 'border-green-500 bg-green-50';
+      case "Molto Elevato":
+        return "border-red-500 bg-red-50";
+      case "Elevato":
+        return "border-orange-500 bg-orange-50";
+      case "Moderato":
+        return "border-yellow-500 bg-yellow-50";
+      default:
+        return "border-green-500 bg-green-50";
     }
   };
 
   const getDomainColor = (domain: string) => {
     switch (domain) {
-      case 'Affettività Negativa': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Distacco': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Antagonismo': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'Disinibizione': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'Psicoticismo': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case "Affettività Negativa":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "Distacco":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Antagonismo":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "Disinibizione":
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case "Psicoticismo":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -110,20 +125,27 @@ export default function ResultsPage() {
               Elaborazione Risultati in Corso...
             </h2>
             <p className="text-gray-600 mb-6">
-              Stiamo analizzando le tue risposte e generando il profilo personalizzato
+              Stiamo analizzando le tue risposte e generando il profilo
+              personalizzato
             </p>
             <div className="space-y-3 text-left max-w-md mx-auto">
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-600" />
-                <span className="text-sm text-gray-600">Analisi delle risposte completata</span>
+                <span className="text-sm text-gray-600">
+                  Analisi delle risposte completata
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-600" />
-                <span className="text-sm text-gray-600">Calcolo dei punteggi in corso...</span>
+                <span className="text-sm text-gray-600">
+                  Calcolo dei punteggi in corso...
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-sm text-gray-600">Generazione del profilo personalizzato</span>
+                <span className="text-sm text-gray-600">
+                  Generazione del profilo personalizzato
+                </span>
               </div>
             </div>
           </CardContent>
@@ -138,15 +160,15 @@ export default function ResultsPage() {
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => navigate("/")}
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Dashboard</span>
             </Button>
-            
+
             <div className="flex items-center space-x-3">
               <Button variant="outline" size="sm">
                 <Share2 className="w-4 h-4 mr-2" />
@@ -177,33 +199,45 @@ export default function ResultsPage() {
 
         {/* Overall Score Card */}
         {pid5Profile && (
-          <Card className={`mb-8 border-2 shadow-xl ${getRiskColor(pid5Profile.overallRisk)}`}>
+          <Card
+            className={`mb-8 border-2 shadow-xl ${getRiskColor(pid5Profile.overallRisk)}`}
+          >
             <CardContent className="p-8">
               <div className="grid md:grid-cols-3 gap-8 items-center">
                 <div className="text-center">
-                  <div className="text-5xl font-bold mb-2 text-gray-900">{Math.round(averageTScore)}</div>
+                  <div className="text-5xl font-bold mb-2 text-gray-900">
+                    {Math.round(averageTScore)}
+                  </div>
                   <div className="text-gray-600">T-Score Medio</div>
                 </div>
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-900">Livello di Rischio: {pid5Profile.overallRisk}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    Livello di Rischio: {pid5Profile.overallRisk}
+                  </h3>
                   {pid5Profile.primaryDomains.length > 0 && (
                     <div>
                       <p className="text-gray-600 mb-2">Domini Elevati:</p>
                       <div className="flex flex-wrap gap-2">
-                        {pid5Profile.primaryDomains.map(domain => (
-                          <Badge key={domain} className={getDomainColor(domain)}>
+                        {pid5Profile.primaryDomains.map((domain) => (
+                          <Badge
+                            key={domain}
+                            className={getDomainColor(domain)}
+                          >
                             {domain}
                           </Badge>
                         ))}
                       </div>
                     </div>
                   )}
-                  <Badge variant="secondary" className="bg-white/80 text-gray-700">
+                  <Badge
+                    variant="secondary"
+                    className="bg-white/80 text-gray-700"
+                  >
                     {Object.keys(answers).length} item valutati
                   </Badge>
                 </div>
                 <div className="text-center">
-                  {pid5Profile.overallRisk === 'Basso' ? (
+                  {pid5Profile.overallRisk === "Basso" ? (
                     <Shield className="w-16 h-16 mx-auto mb-4 text-green-600" />
                   ) : (
                     <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-orange-600" />
@@ -218,19 +252,31 @@ export default function ResultsPage() {
 
         <Tabs defaultValue="overview" className="space-y-8">
           <TabsList className="grid w-full grid-cols-4 h-12">
-            <TabsTrigger value="overview" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="overview"
+              className="flex items-center space-x-2"
+            >
               <BarChart3 className="w-4 h-4" />
               <span>Panoramica</span>
             </TabsTrigger>
-            <TabsTrigger value="domains" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="domains"
+              className="flex items-center space-x-2"
+            >
               <Brain className="w-4 h-4" />
               <span>Domini</span>
             </TabsTrigger>
-            <TabsTrigger value="clinical" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="clinical"
+              className="flex items-center space-x-2"
+            >
               <Target className="w-4 h-4" />
               <span>Clinico</span>
             </TabsTrigger>
-            <TabsTrigger value="recommendations" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="recommendations"
+              className="flex items-center space-x-2"
+            >
               <Lightbulb className="w-4 h-4" />
               <span>Raccomandazioni</span>
             </TabsTrigger>
@@ -251,15 +297,25 @@ export default function ResultsPage() {
                     {pid5Profile.domainResults.map((result, index) => (
                       <div key={index} className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="font-medium text-gray-900">{result.domain}</span>
+                          <span className="font-medium text-gray-900">
+                            {result.domain}
+                          </span>
                           <div className="flex items-center space-x-2">
-                            <Badge variant="outline" className={getDomainColor(result.domain)}>
+                            <Badge
+                              variant="outline"
+                              className={getDomainColor(result.domain)}
+                            >
                               {result.level}
                             </Badge>
-                            <span className="text-sm font-bold">T={result.tScore}</span>
+                            <span className="text-sm font-bold">
+                              T={result.tScore}
+                            </span>
                           </div>
                         </div>
-                        <Progress value={(result.tScore / 100) * 100} className="h-3" />
+                        <Progress
+                          value={(result.tScore / 100) * 100}
+                          className="h-3"
+                        />
                         <div className="text-sm text-gray-600">
                           {result.interpretation}
                         </div>
@@ -298,18 +354,26 @@ export default function ResultsPage() {
             {pid5Profile && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pid5Profile.domainResults.map((result, index) => (
-                  <Card key={index} className={`border-2 ${getDomainColor(result.domain)} bg-white/90`}>
+                  <Card
+                    key={index}
+                    className={`border-2 ${getDomainColor(result.domain)} bg-white/90`}
+                  >
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg">{result.domain}</CardTitle>
                       <div className="flex items-center justify-between">
                         <Badge className={getDomainColor(result.domain)}>
                           {result.level}
                         </Badge>
-                        <span className="text-2xl font-bold">T={result.tScore}</span>
+                        <span className="text-2xl font-bold">
+                          T={result.tScore}
+                        </span>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <Progress value={(result.tScore / 100) * 100} className="h-2" />
+                      <Progress
+                        value={(result.tScore / 100) * 100}
+                        className="h-2"
+                      />
                       <p className="text-sm text-gray-700 leading-relaxed">
                         {result.interpretation}
                       </p>
@@ -323,15 +387,20 @@ export default function ResultsPage() {
                       )}
 
                       {/* Mostra faccette elevate */}
-                      {result.facets.filter(f => f.clinicalSignificance).length > 0 && (
+                      {result.facets.filter((f) => f.clinicalSignificance)
+                        .length > 0 && (
                         <div className="mt-2">
-                          <h6 className="text-xs font-semibold text-gray-700 mb-1">Faccette Elevate:</h6>
+                          <h6 className="text-xs font-semibold text-gray-700 mb-1">
+                            Faccette Elevate:
+                          </h6>
                           <div className="space-y-1">
-                            {result.facets.filter(f => f.clinicalSignificance).map((facet, fi) => (
-                              <div key={fi} className="text-xs text-gray-600">
-                                {facet.facet} (T={facet.tScore})
-                              </div>
-                            ))}
+                            {result.facets
+                              .filter((f) => f.clinicalSignificance)
+                              .map((facet, fi) => (
+                                <div key={fi} className="text-xs text-gray-600">
+                                  {facet.facet} (T={facet.tScore})
+                                </div>
+                              ))}
                           </div>
                         </div>
                       )}
@@ -345,15 +414,18 @@ export default function ResultsPage() {
           <TabsContent value="clinical">
             {pid5Profile && (
               <div className="space-y-8">
-                <Alert className={`border-2 ${getRiskColor(pid5Profile.overallRisk)}`}>
+                <Alert
+                  className={`border-2 ${getRiskColor(pid5Profile.overallRisk)}`}
+                >
                   <AlertTriangle className="h-5 w-5" />
                   <AlertDescription className="text-base">
-                    <strong>Livello di Rischio Complessivo: {pid5Profile.overallRisk}</strong>
+                    <strong>
+                      Livello di Rischio Complessivo: {pid5Profile.overallRisk}
+                    </strong>
                     <br />
-                    {pid5Profile.overallRisk === 'Basso'
-                      ? 'Il profilo non evidenzia problematiche clinicamente significative.'
-                      : 'Il profilo evidenzia alcune aree che potrebbero richiedere attenzione clinica.'
-                    }
+                    {pid5Profile.overallRisk === "Basso"
+                      ? "Il profilo non evidenzia problematiche clinicamente significative."
+                      : "Il profilo evidenzia alcune aree che potrebbero richiedere attenzione clinica."}
                   </AlertDescription>
                 </Alert>
 
@@ -363,7 +435,10 @@ export default function ResultsPage() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {pid5Profile.clinicalNotes.map((note, index) => (
-                      <div key={index} className="p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500"
+                      >
                         <p className="text-gray-700 leading-relaxed">{note}</p>
                       </div>
                     ))}
@@ -373,21 +448,27 @@ export default function ResultsPage() {
                 {pid5Profile.primaryDomains.length > 0 && (
                   <Card className="border-0 shadow-lg">
                     <CardHeader>
-                      <CardTitle className="text-red-800">Domini con Elevazione Clinica</CardTitle>
+                      <CardTitle className="text-red-800">
+                        Domini con Elevazione Clinica
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid gap-4">
                         {pid5Profile.domainResults
-                          .filter(r => r.clinicalSignificance)
+                          .filter((r) => r.clinicalSignificance)
                           .map((result, index) => (
-                            <div key={index} className="p-4 border-l-4 border-red-500 bg-red-50">
+                            <div
+                              key={index}
+                              className="p-4 border-l-4 border-red-500 bg-red-50"
+                            >
                               <h5 className="font-semibold text-red-900 mb-2">
                                 {result.domain} (T-Score: {result.tScore})
                               </h5>
-                              <p className="text-red-800 text-sm">{result.interpretation}</p>
+                              <p className="text-red-800 text-sm">
+                                {result.interpretation}
+                              </p>
                             </div>
-                          ))
-                        }
+                          ))}
                       </div>
                     </CardContent>
                   </Card>
@@ -410,19 +491,28 @@ export default function ResultsPage() {
                     <Alert className="border-amber-200 bg-amber-50">
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
-                        <strong>Importante:</strong> Questi risultati sono generati automaticamente e non sostituiscono una valutazione clinica professionale.
+                        <strong>Importante:</strong> Questi risultati sono
+                        generati automaticamente e non sostituiscono una
+                        valutazione clinica professionale.
                       </AlertDescription>
                     </Alert>
 
                     <div className="space-y-4">
-                      {pid5Profile.recommendations.map((recommendation, index) => (
-                        <div key={index} className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                          <div className="flex items-start space-x-3">
-                            <CheckCircle className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
-                            <p className="text-blue-900 leading-relaxed">{recommendation}</p>
+                      {pid5Profile.recommendations.map(
+                        (recommendation, index) => (
+                          <div
+                            key={index}
+                            className="p-4 bg-blue-50 rounded-lg border border-blue-200"
+                          >
+                            <div className="flex items-start space-x-3">
+                              <CheckCircle className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+                              <p className="text-blue-900 leading-relaxed">
+                                {recommendation}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -433,18 +523,33 @@ export default function ResultsPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="p-4 bg-gray-50 rounded-lg">
-                      <h5 className="font-semibold text-gray-900 mb-2">1. Consultazione Professionale</h5>
-                      <p className="text-gray-700 text-sm">Discutere questi risultati con uno psicologo clinico qualificato per una valutazione approfondita.</p>
+                      <h5 className="font-semibold text-gray-900 mb-2">
+                        1. Consultazione Professionale
+                      </h5>
+                      <p className="text-gray-700 text-sm">
+                        Discutere questi risultati con uno psicologo clinico
+                        qualificato per una valutazione approfondita.
+                      </p>
                     </div>
 
                     <div className="p-4 bg-gray-50 rounded-lg">
-                      <h5 className="font-semibold text-gray-900 mb-2">2. Approfondimenti Diagnostici</h5>
-                      <p className="text-gray-700 text-sm">Considerare ulteriori strumenti di assessment per una diagnosi differenziale accurata.</p>
+                      <h5 className="font-semibold text-gray-900 mb-2">
+                        2. Approfondimenti Diagnostici
+                      </h5>
+                      <p className="text-gray-700 text-sm">
+                        Considerare ulteriori strumenti di assessment per una
+                        diagnosi differenziale accurata.
+                      </p>
                     </div>
 
                     <div className="p-4 bg-gray-50 rounded-lg">
-                      <h5 className="font-semibold text-gray-900 mb-2">3. Pianificazione Terapeutica</h5>
-                      <p className="text-gray-700 text-sm">Sviluppare un piano di trattamento personalizzato basato sui domini con elevazione significativa.</p>
+                      <h5 className="font-semibold text-gray-900 mb-2">
+                        3. Pianificazione Terapeutica
+                      </h5>
+                      <p className="text-gray-700 text-sm">
+                        Sviluppare un piano di trattamento personalizzato basato
+                        sui domini con elevazione significativa.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -460,7 +565,10 @@ export default function ResultsPage() {
               Esplora Altri Test
             </Button>
           </Link>
-          <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600">
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600"
+          >
             <Download className="w-5 h-5 mr-2" />
             Scarica Report Completo
           </Button>

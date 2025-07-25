@@ -1,22 +1,37 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ClipboardList, BarChart3, Users, Clock, CheckCircle, Play } from "lucide-react";
+import {
+  ClipboardList,
+  BarChart3,
+  Users,
+  Clock,
+  CheckCircle,
+  Play,
+} from "lucide-react";
 
 export default function Index() {
   const [activeTests] = useState([
     {
       id: 1,
-      title: "PID-5 - Inventario della Personalità per DSM-5 (Versione Completa)",
-      description: "Strumento completo di valutazione dei tratti di personalità maladattivi con 220 item secondo il modello dimensionale del DSM-5",
+      title:
+        "PID-5 - Inventario della Personalità per DSM-5 (Versione Completa)",
+      description:
+        "Strumento completo di valutazione dei tratti di personalità maladattivi con 220 item secondo il modello dimensionale del DSM-5",
       duration: "40-45 min",
       questions: 220,
       completions: 847,
       category: "Clinico",
-      difficulty: "Professionale"
+      difficulty: "Professionale",
     },
     {
       id: 2,
@@ -26,7 +41,7 @@ export default function Index() {
       questions: 40,
       completions: 892,
       category: "Emozioni",
-      difficulty: "Facile"
+      difficulty: "Facile",
     },
     {
       id: 3,
@@ -36,15 +51,15 @@ export default function Index() {
       questions: 80,
       completions: 2156,
       category: "Carriera",
-      difficulty: "Avanzato"
-    }
+      difficulty: "Avanzato",
+    },
   ]);
 
   const stats = [
     { icon: ClipboardList, label: "Test Disponibili", value: "15+" },
     { icon: Users, label: "Utenti Attivi", value: "12.5K" },
     { icon: BarChart3, label: "Test Completati", value: "45.2K" },
-    { icon: CheckCircle, label: "Accuratezza", value: "94%" }
+    { icon: CheckCircle, label: "Accuratezza", value: "94%" },
   ];
 
   return (
@@ -59,11 +74,16 @@ export default function Index() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">TestPro</h1>
-                <p className="text-sm text-gray-600">Piattaforma di Assessment Professionale</p>
+                <p className="text-sm text-gray-600">
+                  Piattaforma di Assessment Professionale
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-800"
+              >
                 Sistema Attivo
               </Badge>
               <Button variant="outline" size="sm">
@@ -85,18 +105,24 @@ export default function Index() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Piattaforma avanzata per l'amministrazione di test psicologici e di valutazione 
-              con elaborazione automatica dei risultati e reportistica dettagliata.
+              Piattaforma avanzata per l'amministrazione di test psicologici e
+              di valutazione con elaborazione automatica dei risultati e
+              reportistica dettagliata.
             </p>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
             {stats.map((stat, index) => (
-              <Card key={index} className="text-center border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <Card
+                key={index}
+                className="text-center border-0 shadow-lg bg-white/80 backdrop-blur-sm"
+              >
                 <CardContent className="p-6">
                   <stat.icon className="w-8 h-8 mx-auto mb-3 text-blue-600" />
-                  <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
+                    {stat.value}
+                  </div>
                   <div className="text-sm text-gray-600">{stat.label}</div>
                 </CardContent>
               </Card>
@@ -106,15 +132,20 @@ export default function Index() {
           {/* Test Cards */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {activeTests.map((test) => (
-              <Card key={test.id} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm">
+              <Card
+                key={test.id}
+                className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm"
+              >
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between mb-3">
                     <Badge
                       variant="secondary"
                       className={`${
-                        test.category === 'Clinico' ? 'bg-red-100 text-red-800' :
-                        test.category === 'Emozioni' ? 'bg-green-100 text-green-800' :
-                        'bg-orange-100 text-orange-800'
+                        test.category === "Clinico"
+                          ? "bg-red-100 text-red-800"
+                          : test.category === "Emozioni"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-orange-100 text-orange-800"
                       }`}
                     >
                       {test.category}
@@ -138,14 +169,18 @@ export default function Index() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <ClipboardList className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-600">{test.questions} domande</span>
+                      <span className="text-gray-600">
+                        {test.questions} domande
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Completamenti</span>
-                      <span className="font-medium">{test.completions.toLocaleString()}</span>
+                      <span className="font-medium">
+                        {test.completions.toLocaleString()}
+                      </span>
                     </div>
                     <Progress value={75} className="h-2" />
                   </div>
@@ -169,17 +204,26 @@ export default function Index() {
                   Pronto per iniziare la valutazione?
                 </h3>
                 <p className="text-blue-100 mb-6">
-                  Scegli un test dalla lista sopra e ricevi risultati dettagliati 
-                  con analisi personalizzata e suggerimenti professionali.
+                  Scegli un test dalla lista sopra e ricevi risultati
+                  dettagliati con analisi personalizzata e suggerimenti
+                  professionali.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link to="/results">
-                    <Button variant="secondary" size="lg" className="bg-white text-blue-600 hover:bg-gray-50">
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="bg-white text-blue-600 hover:bg-gray-50"
+                    >
                       <BarChart3 className="w-5 h-5 mr-2" />
                       Visualizza Risultati
                     </Button>
                   </Link>
-                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-white text-white hover:bg-white/10"
+                  >
                     Scopri di Più
                   </Button>
                 </div>
