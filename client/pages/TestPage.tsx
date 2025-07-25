@@ -139,7 +139,7 @@ export default function TestPage() {
                 </span>
               </div>
               <Badge variant="secondary">
-                {answeredQuestions}/{testData.questions.length} risposte
+                {answeredQuestions}/{testData?.items?.length || 0} risposte
               </Badge>
             </div>
           </div>
