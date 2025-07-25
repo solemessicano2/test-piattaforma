@@ -6,44 +6,32 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  ArrowLeft, 
-  Download, 
-  Share2, 
-  Target, 
-  TrendingUp, 
-  Brain, 
-  Heart, 
-  Users, 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { processPID5Results, type PID5Profile } from "@/utils/pid5-scoring";
+import {
+  ArrowLeft,
+  Download,
+  Share2,
+  Target,
+  TrendingUp,
+  Brain,
+  Heart,
+  Users,
   Lightbulb,
   CheckCircle,
-  BarChart3
+  BarChart3,
+  AlertTriangle,
+  Shield
 } from "lucide-react";
 
-interface TestResult {
-  category: string;
-  score: number;
-  maxScore: number;
-  percentage: number;
-  interpretation: string;
-  description: string;
-}
 
-interface PersonalityProfile {
-  type: string;
-  title: string;
-  description: string;
-  strengths: string[];
-  areasForGrowth: string[];
-  idealCareers: string[];
-  workStyle: string;
-}
 
 export default function ResultsPage() {
   const { testId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(true);
+  const [pid5Profile, setPid5Profile] = useState<PID5Profile | null>(null);
   
   // Get data from navigation state
   const { answers, testData } = location.state || {};
@@ -51,83 +39,51 @@ export default function ResultsPage() {
   useEffect(() => {
     // Simulate processing time
     const timer = setTimeout(() => {
+      if (answers) {
+        const profile = processPID5Results(answers);
+        setPid5Profile(profile);
+      }
       setIsProcessing(false);
     }, 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [answers]);
 
-  // Mock results processing
-  const processResults = (): TestResult[] => {
-    if (!answers) return [];
-    
-    return [
-      {
-        category: "Estroversione",
-        score: 7,
-        maxScore: 10,
-        percentage: 70,
-        interpretation: "Moderatamente Estroverso",
-        description: "Bilanci bene l'interazione sociale con il tempo per riflettere"
-      },
-      {
-        category: "Intuizione",
-        score: 8,
-        maxScore: 10,
-        percentage: 80,
-        interpretation: "Altamente Intuitivo",
-        description: "Preferisci guardare al quadro generale e alle possibilità future"
-      },
-      {
-        category: "Pensiero",
-        score: 6,
-        maxScore: 10,
-        percentage: 60,
-        interpretation: "Equilibrato",
-        description: "Combini logica e considerazioni emotive nelle decisioni"
-      },
-      {
-        category: "Giudizio",
-        score: 9,
-        maxScore: 10,
-        percentage: 90,
-        interpretation: "Molto Organizzato",
-        description: "Preferisci struttura, pianificazione e decisioni tempestive"
-      }
-    ];
+  if (!pid5Profile && !isProcessing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <p className="text-gray-600 mb-4">Errore nell'elaborazione dei risultati</p>
+            <Link to="/">
+              <Button>Torna alla Dashboard</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const getRiskColor = (risk: string) => {
+    switch (risk) {
+      case 'Molto Elevato': return 'border-red-500 bg-red-50';
+      case 'Elevato': return 'border-orange-500 bg-orange-50';
+      case 'Moderato': return 'border-yellow-500 bg-yellow-50';
+      default: return 'border-green-500 bg-green-50';
+    }
   };
 
-  const getPersonalityProfile = (): PersonalityProfile => {
-    return {
-      type: "ENTJ",
-      title: "Il Comandante",
-      description: "Leader naturale con una forte visione strategica e capacità di motivare gli altri verso obiettivi ambiziosi.",
-      strengths: [
-        "Leadership naturale",
-        "Pensiero strategico",
-        "Decisionalità",
-        "Capacità organizzative",
-        "Orientamento agli obiettivi"
-      ],
-      areasForGrowth: [
-        "Pazienza con processi lenti",
-        "Delega efficace",
-        "Gestione dell'emotività altrui",
-        "Flessibilità nei piani"
-      ],
-      idealCareers: [
-        "CEO/Dirigente",
-        "Consulente di strategia",
-        "Project Manager",
-        "Avvocato",
-        "Imprenditore"
-      ],
-      workStyle: "Ama sfide complesse, preferisce autonomia decisionale e risponde bene a obiettivi chiari e ambiziosi."
-    };
+  const getDomainColor = (domain: string) => {
+    switch (domain) {
+      case 'Affettività Negativa': return 'bg-red-100 text-red-800 border-red-200';
+      case 'Distacco': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Antagonismo': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'Disinibizione': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'Psicoticismo': return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
-  const results = processResults();
-  const personalityProfile = getPersonalityProfile();
-  const overallScore = results.reduce((sum, result) => sum + result.percentage, 0) / results.length;
+  const averageTScore = pid5Profile ? pid5Profile.results.reduce((sum, r) => sum + r.tScore, 0) / pid5Profile.results.length : 50;
 
   if (!answers || !testData) {
     return (
@@ -212,36 +168,53 @@ export default function ResultsPage() {
             <CheckCircle className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Risultati del Test Completati!
+            Risultati PID-5 Completati!
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {testData.title} - Il tuo profilo personalizzato è pronto
+            Inventario della Personalità per DSM-5 - Profilo clinico generato
           </p>
         </div>
 
         {/* Overall Score Card */}
-        <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-          <CardContent className="p-8">
-            <div className="grid md:grid-cols-3 gap-8 items-center">
-              <div className="text-center">
-                <div className="text-5xl font-bold mb-2">{Math.round(overallScore)}%</div>
-                <div className="text-blue-100">Punteggio Complessivo</div>
+        {pid5Profile && (
+          <Card className={`mb-8 border-2 shadow-xl ${getRiskColor(pid5Profile.overallRisk)}`}>
+            <CardContent className="p-8">
+              <div className="grid md:grid-cols-3 gap-8 items-center">
+                <div className="text-center">
+                  <div className="text-5xl font-bold mb-2 text-gray-900">{Math.round(averageTScore)}</div>
+                  <div className="text-gray-600">T-Score Medio</div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-gray-900">Livello di Rischio: {pid5Profile.overallRisk}</h3>
+                  {pid5Profile.primaryDomains.length > 0 && (
+                    <div>
+                      <p className="text-gray-600 mb-2">Domini Elevati:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {pid5Profile.primaryDomains.map(domain => (
+                          <Badge key={domain} className={getDomainColor(domain)}>
+                            {domain}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <Badge variant="secondary" className="bg-white/80 text-gray-700">
+                    {Object.keys(answers).length} item valutati
+                  </Badge>
+                </div>
+                <div className="text-center">
+                  {pid5Profile.overallRisk === 'Basso' ? (
+                    <Shield className="w-16 h-16 mx-auto mb-4 text-green-600" />
+                  ) : (
+                    <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-orange-600" />
+                  )}
+                  <div className="text-sm text-gray-600">Validità Clinica</div>
+                  <div className="text-2xl font-bold text-gray-900">Alta</div>
+                </div>
               </div>
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold">Il tuo tipo: {personalityProfile.type}</h3>
-                <p className="text-blue-100">{personalityProfile.title}</p>
-                <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                  {Object.keys(answers).length} risposte analizzate
-                </Badge>
-              </div>
-              <div className="text-center">
-                <Target className="w-16 h-16 mx-auto mb-4 text-blue-200" />
-                <div className="text-sm text-blue-100">Affidabilità Analisi</div>
-                <div className="text-2xl font-bold">94%</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs defaultValue="overview" className="space-y-8">
           <TabsList className="grid w-full grid-cols-4 h-12">
@@ -249,213 +222,220 @@ export default function ResultsPage() {
               <BarChart3 className="w-4 h-4" />
               <span>Panoramica</span>
             </TabsTrigger>
-            <TabsTrigger value="personality" className="flex items-center space-x-2">
+            <TabsTrigger value="domains" className="flex items-center space-x-2">
               <Brain className="w-4 h-4" />
-              <span>Personalità</span>
+              <span>Domini</span>
             </TabsTrigger>
-            <TabsTrigger value="career" className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4" />
-              <span>Carriera</span>
+            <TabsTrigger value="clinical" className="flex items-center space-x-2">
+              <Target className="w-4 h-4" />
+              <span>Clinico</span>
             </TabsTrigger>
-            <TabsTrigger value="development" className="flex items-center space-x-2">
+            <TabsTrigger value="recommendations" className="flex items-center space-x-2">
               <Lightbulb className="w-4 h-4" />
-              <span>Sviluppo</span>
+              <span>Raccomandazioni</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Scores Breakdown */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="w-5 h-5 text-blue-600" />
-                    <span>Analisi per Categoria</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {results.map((result, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-gray-900">{result.category}</span>
-                        <Badge variant="outline">{result.interpretation}</Badge>
-                      </div>
-                      <Progress value={result.percentage} className="h-3" />
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">{result.description}</span>
-                        <span className="font-medium">{result.score}/{result.maxScore}</span>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Quick Insights */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Target className="w-5 h-5 text-green-600" />
-                    <span>Insight Principali</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <div className="flex items-start space-x-3">
-                      <Brain className="w-5 h-5 text-blue-600 mt-1" />
-                      <div>
-                        <div className="font-medium text-blue-900">Stile Cognitivo</div>
-                        <div className="text-sm text-blue-700">Pensatore strategico con focus sui risultati</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex items-start space-x-3">
-                      <Users className="w-5 h-5 text-green-600 mt-1" />
-                      <div>
-                        <div className="font-medium text-green-900">Dinamiche Sociali</div>
-                        <div className="text-sm text-green-700">Leader naturale, ispira fiducia negli altri</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="flex items-start space-x-3">
-                      <Heart className="w-5 h-5 text-purple-600 mt-1" />
-                      <div>
-                        <div className="font-medium text-purple-900">Gestione Emotiva</div>
-                        <div className="text-sm text-purple-700">Decisioni basate su logica e obiettivi</div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="personality">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl">Profilo di Personalità: {personalityProfile.type}</CardTitle>
-                <p className="text-gray-600 text-lg">{personalityProfile.title}</p>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                <p className="text-gray-700 leading-relaxed text-lg">
-                  {personalityProfile.description}
-                </p>
-                
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <h4 className="font-semibold text-green-800 mb-4 flex items-center space-x-2">
-                      <CheckCircle className="w-5 h-5" />
-                      <span>Punti di Forza</span>
-                    </h4>
-                    <ul className="space-y-2">
-                      {personalityProfile.strengths.map((strength, index) => (
-                        <li key={index} className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <span className="text-gray-700">{strength}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-blue-800 mb-4 flex items-center space-x-2">
-                      <TrendingUp className="w-5 h-5" />
-                      <span>Aree di Crescita</span>
-                    </h4>
-                    <ul className="space-y-2">
-                      {personalityProfile.areasForGrowth.map((area, index) => (
-                        <li key={index} className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          <span className="text-gray-700">{area}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="career">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="w-6 h-6 text-blue-600" />
-                  <span>Orientamento Professionale</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-4">Stile di Lavoro Ideale</h4>
-                  <p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg">
-                    {personalityProfile.workStyle}
-                  </p>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-4">Carriere Consigliate</h4>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {personalityProfile.idealCareers.map((career, index) => (
-                      <div key={index} className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
-                        <div className="font-medium text-gray-900">{career}</div>
+            {pid5Profile && (
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Scores Breakdown */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-blue-600" />
+                      <span>T-Scores per Dominio</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {pid5Profile.results.map((result, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium text-gray-900">{result.domain}</span>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="outline" className={getDomainColor(result.domain)}>
+                              {result.level}
+                            </Badge>
+                            <span className="text-sm font-bold">T={result.tScore}</span>
+                          </div>
+                        </div>
+                        <Progress value={(result.tScore / 100) * 100} className="h-3" />
+                        <div className="text-sm text-gray-600">
+                          {result.interpretation}
+                        </div>
+                        {result.clinicalSignificance && (
+                          <Badge variant="destructive" className="text-xs">
+                            Clinicamente Significativo
+                          </Badge>
+                        )}
                       </div>
                     ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+
+                {/* Clinical Notes */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Target className="w-5 h-5 text-red-600" />
+                      <span>Note Cliniche</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {pid5Profile.clinicalNotes.map((note, index) => (
+                      <Alert key={index}>
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription>{note}</AlertDescription>
+                      </Alert>
+                    ))}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </TabsContent>
 
-          <TabsContent value="development">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Lightbulb className="w-6 h-6 text-amber-600" />
-                  <span>Piano di Sviluppo Personale</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-3 gap-6">
-                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-                    <CardContent className="p-6">
-                      <h5 className="font-semibold text-blue-900 mb-3">A Breve Termine (1-3 mesi)</h5>
-                      <ul className="space-y-2 text-sm text-blue-800">
-                        <li>• Praticare l'ascolto attivo</li>
-                        <li>• Sviluppare pazienza con i processi</li>
-                        <li>• Delegare piccole responsabilità</li>
-                      </ul>
+          <TabsContent value="domains">
+            {pid5Profile && (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pid5Profile.results.map((result, index) => (
+                  <Card key={index} className={`border-2 ${getDomainColor(result.domain)} bg-white/90`}>
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-lg">{result.domain}</CardTitle>
+                      <div className="flex items-center justify-between">
+                        <Badge className={getDomainColor(result.domain)}>
+                          {result.level}
+                        </Badge>
+                        <span className="text-2xl font-bold">T={result.tScore}</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Progress value={(result.tScore / 100) * 100} className="h-2" />
+                      <p className="text-sm text-gray-700 leading-relaxed">
+                        {result.interpretation}
+                      </p>
+                      {result.clinicalSignificance && (
+                        <Alert>
+                          <AlertTriangle className="h-4 w-4" />
+                          <AlertDescription className="text-xs">
+                            Punteggio clinicamente significativo (T≥65)
+                          </AlertDescription>
+                        </Alert>
+                      )}
                     </CardContent>
                   </Card>
-                  
-                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-                    <CardContent className="p-6">
-                      <h5 className="font-semibold text-green-900 mb-3">Medio Termine (3-6 mesi)</h5>
-                      <ul className="space-y-2 text-sm text-green-800">
-                        <li>• Corso di leadership emotiva</li>
-                        <li>• Mentoring di colleghi junior</li>
-                        <li>• Feedback a 360 gradi</li>
-                      </ul>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="clinical">
+            {pid5Profile && (
+              <div className="space-y-8">
+                <Alert className={`border-2 ${getRiskColor(pid5Profile.overallRisk)}`}>
+                  <AlertTriangle className="h-5 w-5" />
+                  <AlertDescription className="text-base">
+                    <strong>Livello di Rischio Complessivo: {pid5Profile.overallRisk}</strong>
+                    <br />
+                    {pid5Profile.overallRisk === 'Basso'
+                      ? 'Il profilo non evidenzia problematiche clinicamente significative.'
+                      : 'Il profilo evidenzia alcune aree che potrebbero richiedere attenzione clinica.'
+                    }
+                  </AlertDescription>
+                </Alert>
+
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle>Interpretazione Clinica Dettagliata</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {pid5Profile.clinicalNotes.map((note, index) => (
+                      <div key={index} className="p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+                        <p className="text-gray-700 leading-relaxed">{note}</p>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {pid5Profile.primaryDomains.length > 0 && (
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="text-red-800">Domini con Elevazione Clinica</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4">
+                        {pid5Profile.results
+                          .filter(r => r.clinicalSignificance)
+                          .map((result, index) => (
+                            <div key={index} className="p-4 border-l-4 border-red-500 bg-red-50">
+                              <h5 className="font-semibold text-red-900 mb-2">
+                                {result.domain} (T-Score: {result.tScore})
+                              </h5>
+                              <p className="text-red-800 text-sm">{result.interpretation}</p>
+                            </div>
+                          ))
+                        }
+                      </div>
                     </CardContent>
                   </Card>
-                  
-                  <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
-                    <CardContent className="p-6">
-                      <h5 className="font-semibold text-purple-900 mb-3">Lungo Termine (6+ mesi)</h5>
-                      <ul className="space-y-2 text-sm text-purple-800">
-                        <li>• Executive coaching</li>
-                        <li>• Progetti di trasformazione</li>
-                        <li>• Leadership strategica</li>
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
+                )}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="recommendations">
+            {pid5Profile && (
+              <div className="space-y-8">
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Lightbulb className="w-6 h-6 text-amber-600" />
+                      <span>Raccomandazioni Cliniche</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <Alert className="border-amber-200 bg-amber-50">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        <strong>Importante:</strong> Questi risultati sono generati automaticamente e non sostituiscono una valutazione clinica professionale.
+                      </AlertDescription>
+                    </Alert>
+
+                    <div className="space-y-4">
+                      {pid5Profile.recommendations.map((recommendation, index) => (
+                        <div key={index} className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="flex items-start space-x-3">
+                            <CheckCircle className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+                            <p className="text-blue-900 leading-relaxed">{recommendation}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle>Prossimi Passi Suggeriti</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h5 className="font-semibold text-gray-900 mb-2">1. Consultazione Professionale</h5>
+                      <p className="text-gray-700 text-sm">Discutere questi risultati con uno psicologo clinico qualificato per una valutazione approfondita.</p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h5 className="font-semibold text-gray-900 mb-2">2. Approfondimenti Diagnostici</h5>
+                      <p className="text-gray-700 text-sm">Considerare ulteriori strumenti di assessment per una diagnosi differenziale accurata.</p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h5 className="font-semibold text-gray-900 mb-2">3. Pianificazione Terapeutica</h5>
+                      <p className="text-gray-700 text-sm">Sviluppare un piano di trattamento personalizzato basato sui domini con elevazione significativa.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
