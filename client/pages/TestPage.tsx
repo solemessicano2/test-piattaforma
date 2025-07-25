@@ -177,7 +177,7 @@ export default function TestPage() {
             <RadioGroup
               value={answers[currentQ.id] || ""}
               onValueChange={(value) => handleAnswer(currentQ.id, value)}
-              className="space-y-4"
+              className="space-y-4 mt-0.5"
             >
               {(testData.scaleLikert || []).map((option, index) => (
                 <div key={index} className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all cursor-pointer">
