@@ -21,16 +21,8 @@ export default function TestPage() {
   const [timeRemaining, setTimeRemaining] = useState(2700); // 45 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Get PID-5 complete test data with fallback
-  let testData;
-  try {
-    testData = PID5_COMPLETE && PID5_COMPLETE.items && PID5_COMPLETE.items.length > 0
-      ? PID5_COMPLETE
-      : PID5_FALLBACK;
-  } catch (error) {
-    console.error('Error loading PID5_COMPLETE, using fallback:', error);
-    testData = PID5_FALLBACK;
-  }
+  // Use fallback data to ensure stability
+  const testData = PID5_FALLBACK;
 
   // Safety check
   if (!testData || !testData?.items || !Array.isArray(testData.items) || testData.items.length === 0) {
