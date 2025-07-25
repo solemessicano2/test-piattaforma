@@ -10,13 +10,13 @@ export default function Index() {
   const [activeTests] = useState([
     {
       id: 1,
-      title: "Test di Personalità Myers-Briggs",
-      description: "Valutazione completa della personalità basata sui 16 tipi MBTI",
-      duration: "15-20 min",
-      questions: 60,
-      completions: 1247,
-      category: "Personalità",
-      difficulty: "Intermedio"
+      title: "PID-5 - Inventario della Personalità per DSM-5",
+      description: "Strumento di valutazione dei tratti di personalità maladattivi secondo il modello dimensionale del DSM-5",
+      duration: "20-25 min",
+      questions: 50,
+      completions: 847,
+      category: "Clinico",
+      difficulty: "Professionale"
     },
     {
       id: 2,
