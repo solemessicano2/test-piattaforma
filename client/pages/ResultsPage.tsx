@@ -363,7 +363,7 @@ export default function ResultsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="grid gap-4">
-                        {pid5Profile.results
+                        {pid5Profile.domainResults
                           .filter(r => r.clinicalSignificance)
                           .map((result, index) => (
                             <div key={index} className="p-4 border-l-4 border-red-500 bg-red-50">
