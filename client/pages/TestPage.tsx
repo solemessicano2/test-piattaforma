@@ -23,6 +23,20 @@ export default function TestPage() {
   // Get PID-5 complete test data
   const testData = PID5_COMPLETE;
 
+  // Safety check
+  if (!testData || !testData.items || testData.items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <p className="text-gray-600 mb-4">Errore nel caricamento del test</p>
+            <Button onClick={() => navigate("/")}>Torna alla Dashboard</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Timer effect
   useEffect(() => {
     if (timeRemaining > 0 && !isSubmitted) {
@@ -44,7 +58,7 @@ export default function TestPage() {
   };
 
   const handleNext = () => {
-    if (currentQuestion < testData.questions.length - 1) {
+    if (currentQuestion < testData.items.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     }
   };
