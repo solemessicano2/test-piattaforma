@@ -215,7 +215,7 @@ export function processPID5CompleteResults(
     ([domain, scores]) => {
       // Calcola risultati per le faccette di questo dominio
       const facetResults: PID5FacetResult[] = Object.entries(
-        facetScores[domain],
+        facetScores[domain] || {},
       ).map(([facet, facetScores]) => {
         const facetScore = facetScores.reduce((sum, s) => sum + s, 0);
         const facetMaxScore = facetScores.length * 3;
