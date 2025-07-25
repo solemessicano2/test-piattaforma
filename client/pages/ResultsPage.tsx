@@ -274,7 +274,7 @@ export default function ResultsPage() {
                 <Share2 className="w-4 h-4 mr-2" />
                 Condividi
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF
               </Button>
