@@ -10,10 +10,10 @@ export default function Index() {
   const [activeTests] = useState([
     {
       id: 1,
-      title: "PID-5 - Inventario della Personalità per DSM-5",
-      description: "Strumento di valutazione dei tratti di personalità maladattivi secondo il modello dimensionale del DSM-5",
-      duration: "20-25 min",
-      questions: 50,
+      title: "PID-5 - Inventario della Personalità per DSM-5 (Versione Completa)",
+      description: "Strumento completo di valutazione dei tratti di personalità maladattivi con 220 item secondo il modello dimensionale del DSM-5",
+      duration: "40-45 min",
+      questions: 220,
       completions: 847,
       category: "Clinico",
       difficulty: "Professionale"
