@@ -102,6 +102,16 @@ export default function TestPage() {
     navigate(`/results/${testId}`, { state: { answers, testData } });
   };
 
+  const autoFillAllQuestions = () => {
+    const autoAnswers: Record<number, string> = {};
+    testData?.items?.forEach((item) => {
+      // Generate random answer (0-3) for each question
+      const randomAnswer = Math.floor(Math.random() * 4);
+      autoAnswers[item.id] = randomAnswer.toString();
+    });
+    setAnswers(autoAnswers);
+  };
+
   const currentQ = testData?.items?.[currentQuestion];
   const progress =
     ((currentQuestion + 1) / (testData?.items?.length || 1)) * 100;
