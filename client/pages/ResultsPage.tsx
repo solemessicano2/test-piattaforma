@@ -40,7 +40,7 @@ export default function ResultsPage() {
     // Simulate processing time
     const timer = setTimeout(() => {
       if (answers) {
-        const profile = processPID5Results(answers);
+        const profile = processPID5CompleteResults(answers);
         setPid5Profile(profile);
       }
       setIsProcessing(false);
