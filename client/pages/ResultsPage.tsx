@@ -321,6 +321,20 @@ export default function ResultsPage() {
                           </AlertDescription>
                         </Alert>
                       )}
+
+                      {/* Mostra faccette elevate */}
+                      {result.facets.filter(f => f.clinicalSignificance).length > 0 && (
+                        <div className="mt-2">
+                          <h6 className="text-xs font-semibold text-gray-700 mb-1">Faccette Elevate:</h6>
+                          <div className="space-y-1">
+                            {result.facets.filter(f => f.clinicalSignificance).map((facet, fi) => (
+                              <div key={fi} className="text-xs text-gray-600">
+                                {facet.facet} (T={facet.tScore})
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
