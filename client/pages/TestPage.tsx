@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, Clock, CheckCircle, AlertCircle } from "lucide-react";
-import { type PID5Item } from "@/data/pid5-complete";
+import { PID5_COMPLETE, type PID5Item } from "@/data/pid5-complete";
 import { PID5_FALLBACK } from "@/data/pid5-fallback";
 
 
