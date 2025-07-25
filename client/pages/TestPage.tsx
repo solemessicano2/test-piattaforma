@@ -67,7 +67,7 @@ export default function TestPage() {
   };
 
   const handleNext = () => {
-    if (currentQuestion < testData.items.length - 1) {
+    if (currentQuestion < (testData?.items?.length || 0) - 1) {
       setCurrentQuestion(prev => prev + 1);
     }
   };
@@ -84,8 +84,8 @@ export default function TestPage() {
     navigate(`/results/${testId}`, { state: { answers, testData } });
   };
 
-  const currentQ = testData.items[currentQuestion];
-  const progress = ((currentQuestion + 1) / testData.items.length) * 100;
+  const currentQ = testData?.items?.[currentQuestion];
+  const progress = ((currentQuestion + 1) / (testData?.items?.length || 1)) * 100;
   const answeredQuestions = Object.keys(answers).length;
 
   // Safety check for currentQ
@@ -147,7 +147,7 @@ export default function TestPage() {
                 <span className="text-2xl font-bold text-blue-600">
                   {currentQuestion + 1}
                 </span>
-                <span className="text-gray-500">di {testData.items.length}</span>
+                <span className="text-gray-500">di {testData?.items?.length || 0}</span>
               </div>
               <Badge variant="outline" className={`${
                 currentQ.domain === 'Affettività Negativa' ? 'bg-red-50 text-red-700 border-red-200' :
@@ -205,16 +205,16 @@ export default function TestPage() {
           </Button>
 
           <div className="flex items-center space-x-4">
-            {answeredQuestions < testData.items.length && (
+            {answeredQuestions < (testData?.items?.length || 0) && (
               <div className="flex items-center space-x-2 text-amber-600">
                 <AlertCircle className="w-4 h-4" />
                 <span className="text-sm">
-                  {testData.items.length - answeredQuestions} domande rimanenti
+                  {(testData?.items?.length || 0) - answeredQuestions} domande rimanenti
                 </span>
               </div>
             )}
             
-            {answeredQuestions === testData.items.length && (
+            {answeredQuestions === (testData?.items?.length || 0) && (
               <div className="flex items-center space-x-2 text-green-600">
                 <CheckCircle className="w-4 h-4" />
                 <span className="text-sm">Tutte le domande completate</span>
@@ -222,7 +222,7 @@ export default function TestPage() {
             )}
           </div>
 
-          {currentQuestion < testData.items.length - 1 ? (
+          {currentQuestion < (testData?.items?.length || 0) - 1 ? (
             <Button
               onClick={handleNext}
               disabled={!answers[currentQ.id]}
