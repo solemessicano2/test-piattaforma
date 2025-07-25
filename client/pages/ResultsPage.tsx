@@ -248,7 +248,7 @@ export default function ResultsPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {pid5Profile.results.map((result, index) => (
+                    {pid5Profile.domainResults.map((result, index) => (
                       <div key={index} className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="font-medium text-gray-900">{result.domain}</span>
