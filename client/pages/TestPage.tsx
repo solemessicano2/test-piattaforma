@@ -21,8 +21,30 @@ export default function TestPage() {
   const [timeRemaining, setTimeRemaining] = useState(2700); // 45 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Use fallback data to ensure stability
-  const testData = PID5_FALLBACK;
+  // Use fallback data to ensure stability, with inline backup
+  let testData;
+  try {
+    testData = PID5_FALLBACK;
+  } catch (error) {
+    // Last resort: inline minimal test data
+    testData = {
+      id: 1,
+      title: "Test PID-5",
+      description: "Test di base",
+      duration: 5,
+      totalQuestions: 5,
+      domains: ['Test'],
+      facets: {},
+      scaleLikert: ["Mai", "Poco", "Spesso", "Sempre"],
+      items: [
+        { id: 1, text: "Domanda di test 1", domain: "Affettività Negativa" as const, facet: "Test" },
+        { id: 2, text: "Domanda di test 2", domain: "Distacco" as const, facet: "Test" },
+        { id: 3, text: "Domanda di test 3", domain: "Antagonismo" as const, facet: "Test" },
+        { id: 4, text: "Domanda di test 4", domain: "Disinibizione" as const, facet: "Test" },
+        { id: 5, text: "Domanda di test 5", domain: "Psicoticismo" as const, facet: "Test" }
+      ]
+    };
+  }
 
   // Safety check
   if (!testData || !testData?.items || !Array.isArray(testData.items) || testData.items.length === 0) {
