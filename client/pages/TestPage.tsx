@@ -163,7 +163,9 @@ export default function TestPage() {
                 className="bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100"
                 disabled={answeredQuestions === (testData?.items?.length || 0)}
               >
-                {answeredQuestions === (testData?.items?.length || 0) ? "✅ Test Completato" : "🎲 Auto-Fill Test"}
+                {answeredQuestions === (testData?.items?.length || 0)
+                  ? "✅ Test Completato"
+                  : "🎲 Auto-Fill Test"}
               </Button>
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4 text-orange-500" />

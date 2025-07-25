@@ -102,7 +102,7 @@ export default function ResultsPage() {
 
   const handleDownloadPDF = () => {
     // Create a clean version for printing
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
     const printContent = generatePrintableHTML();
@@ -118,9 +118,9 @@ export default function ResultsPage() {
   };
 
   const generatePrintableHTML = () => {
-    if (!pid5Profile) return '';
+    if (!pid5Profile) return "";
 
-    const currentDate = new Date().toLocaleDateString('it-IT');
+    const currentDate = new Date().toLocaleDateString("it-IT");
 
     return `
       <!DOCTYPE html>
@@ -153,43 +153,68 @@ export default function ResultsPage() {
           <p>Data: ${currentDate}</p>
         </div>
 
-        <div class="risk-level risk-${pid5Profile.overallRisk.toLowerCase().replace(' ', '-')}">
+        <div class="risk-level risk-${pid5Profile.overallRisk.toLowerCase().replace(" ", "-")}">
           Livello di Rischio Complessivo: ${pid5Profile.overallRisk}
         </div>
 
         <h2>Risultati per Domini</h2>
-        ${pid5Profile.domainResults.map(domain => `
+        ${pid5Profile.domainResults
+          .map(
+            (domain) => `
           <div class="domain-result">
             <div class="domain-title">${domain.domain} (T-Score: ${domain.tScore})</div>
             <p><strong>Livello:</strong> ${domain.level}</p>
             <p>${domain.interpretation}</p>
-            ${domain.facets.filter(f => f.clinicalSignificance).length > 0 ? `
+            ${
+              domain.facets.filter((f) => f.clinicalSignificance).length > 0
+                ? `
               <div class="facet-list">
                 <strong>Faccette Clinicamente Elevate:</strong>
                 <ul>
-                  ${domain.facets.filter(f => f.clinicalSignificance).map(facet => `
+                  ${domain.facets
+                    .filter((f) => f.clinicalSignificance)
+                    .map(
+                      (facet) => `
                     <li>${facet.facet} (T=${facet.tScore})</li>
-                  `).join('')}
+                  `,
+                    )
+                    .join("")}
                 </ul>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
-        `).join('')}
+        `,
+          )
+          .join("")}
 
         <h2>Note Cliniche</h2>
-        ${pid5Profile.clinicalNotes.map(note => `
+        ${pid5Profile.clinicalNotes
+          .map(
+            (note) => `
           <div class="clinical-note">${note}</div>
-        `).join('')}
+        `,
+          )
+          .join("")}
 
         <h2>Considerazioni Diagnostiche</h2>
-        ${pid5Profile.diagnosticConsiderations.map(consideration => `
+        ${pid5Profile.diagnosticConsiderations
+          .map(
+            (consideration) => `
           <div class="clinical-note">${consideration}</div>
-        `).join('')}
+        `,
+          )
+          .join("")}
 
         <h2>Raccomandazioni</h2>
-        ${pid5Profile.recommendations.map(rec => `
+        ${pid5Profile.recommendations
+          .map(
+            (rec) => `
           <div class="recommendation">${rec}</div>
-        `).join('')}
+        `,
+          )
+          .join("")}
 
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
           <p><strong>Importante:</strong> Questi risultati sono generati automaticamente e non sostituiscono una valutazione clinica professionale. Consultare sempre uno psicologo qualificato per interpretazione e pianificazione terapeutica.</p>
