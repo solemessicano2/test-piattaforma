@@ -447,7 +447,7 @@ export default function ResultsPage() {
       let validItems = 0;
 
       itemIds.forEach(itemId => {
-        const answer = answers[itemId];
+        const answer = currentAnswers[itemId];
         if (answer !== undefined) {
           let score = parseInt(answer);
           if (reversedItems.includes(itemId)) {
@@ -629,7 +629,7 @@ export default function ResultsPage() {
                 onClick={handleExportWithFormulas}
                 className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
               >
-                ���� Excel + Formule
+                🧮 Excel + Formule
               </Button>
             </div>
           </div>
