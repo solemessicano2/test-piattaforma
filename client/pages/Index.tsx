@@ -33,26 +33,6 @@ export default function Index() {
       category: "Clinico",
       difficulty: "Professionale",
     },
-    {
-      id: 2,
-      title: "Assessment Intelligenza Emotiva",
-      description: "Misura le competenze emotive e relazionali",
-      duration: "10-15 min",
-      questions: 40,
-      completions: 892,
-      category: "Emozioni",
-      difficulty: "Facile",
-    },
-    {
-      id: 3,
-      title: "Test Orientamento Professionale",
-      description: "Scopri le carriere più adatte alle tue attitudini",
-      duration: "20-25 min",
-      questions: 80,
-      completions: 2156,
-      category: "Carriera",
-      difficulty: "Avanzato",
-    },
   ]);
 
   const stats = [
