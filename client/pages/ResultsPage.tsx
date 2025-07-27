@@ -100,7 +100,9 @@ export default function ResultsPage() {
     }
   };
 
-  const averageTScore = pid5Profile ? pid5Profile.globalSeverity : 50;
+  const averageMeanScore = pid5Profile
+    ? pid5Profile.domainScores.reduce((sum, d) => sum + d.meanScore, 0) / pid5Profile.domainScores.length
+    : 0;
 
   const handleDownloadPDF = () => {
     // Create a clean version for printing
@@ -616,7 +618,7 @@ export default function ResultsPage() {
                         <Alert>
                           <AlertTriangle className="h-4 w-4" />
                           <AlertDescription className="text-xs">
-                            Punteggio clinicamente significativo (T��65)
+                            Punteggio clinicamente significativo (T≥65)
                           </AlertDescription>
                         </Alert>
                       )}
