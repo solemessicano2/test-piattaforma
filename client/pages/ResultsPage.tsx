@@ -267,11 +267,11 @@ export default function ResultsPage() {
     csvContent += `Punteggio Medio Complessivo,${averageMeanScore.toFixed(2)}\n\n`;
 
     // Domain summary
-    csvContent += "PUNTEGGI PER DOMINI\n";
+    csvContent += "PUNTEGGI PER DOMINI (DSM-5)\n";
     csvContent +=
-      "Dominio,Punteggio Grezzo,T-Score,Livello,Significatività Clinica\n";
-    pid5Profile.domainResults.forEach((domain) => {
-      csvContent += `${domain.domain},${domain.score},${domain.tScore},${domain.level},${domain.clinicalSignificance ? "Sì" : "No"}\n`;
+      "Dominio,Punteggio Medio,Interpretazione,Clinicamente Elevato\n";
+    pid5Profile.domainScores.forEach((domain) => {
+      csvContent += `${domain.domain},${domain.meanScore.toFixed(2)},${domain.interpretation},${domain.meanScore >= 2.0 ? "Sì" : "No"}\n`;
     });
     csvContent += "\n";
 
