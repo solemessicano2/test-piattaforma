@@ -354,7 +354,7 @@ export default function ResultsPage() {
   };
 
   const handleExportWithFormulas = () => {
-    if (!pid5Profile || !answers || !testData) return;
+    if (!pid5Profile) return;
 
     // Generate Excel data with formulas
     const excelData = generateExcelWithFormulas();
