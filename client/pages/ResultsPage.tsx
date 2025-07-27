@@ -182,24 +182,23 @@ export default function ResultsPage() {
         </div>
 
         <h2>Risultati per Domini</h2>
-        ${pid5Profile.domainResults
+        ${pid5Profile.domainScores
           .map(
             (domain) => `
           <div class="domain-result">
-            <div class="domain-title">${domain.domain} (T-Score: ${domain.tScore})</div>
-            <p><strong>Livello:</strong> ${domain.level}</p>
-            <p>${domain.interpretation}</p>
+            <div class="domain-title">${domain.domain} (Punteggio: ${domain.meanScore.toFixed(2)})</div>
+            <p><strong>Interpretazione:</strong> ${domain.interpretation}</p>
             ${
-              domain.facets.filter((f) => f.clinicalSignificance).length > 0
+              domain.facets.filter((f) => f.meanScore >= 2.0).length > 0
                 ? `
               <div class="facet-list">
                 <strong>Faccette Clinicamente Elevate:</strong>
                 <ul>
                   ${domain.facets
-                    .filter((f) => f.clinicalSignificance)
+                    .filter((f) => f.meanScore >= 2.0)
                     .map(
                       (facet) => `
-                    <li>${facet.facet} (T=${facet.tScore})</li>
+                    <li>${facet.facet} (${facet.meanScore.toFixed(2)})</li>
                   `,
                     )
                     .join("")}
