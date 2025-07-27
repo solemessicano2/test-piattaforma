@@ -227,6 +227,16 @@ export default function ResultsPage() {
     `;
   };
 
+  // Show password protection first
+  if (!isAuthenticated) {
+    return (
+      <PasswordProtection
+        onAuthenticated={() => setIsAuthenticated(true)}
+        title="Accesso Risultati PID-5"
+      />
+    );
+  }
+
   if (!answers || !testData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
