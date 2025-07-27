@@ -266,7 +266,7 @@ export default function ResultsPage() {
   };
 
   const handleExportToExcel = () => {
-    if (!pid5Profile || !answers || !testData) return;
+    if (!pid5Profile) return;
 
     // Generate CSV data with raw scores
     const csvData = generateExcelData();
