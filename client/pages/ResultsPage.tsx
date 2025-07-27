@@ -1000,6 +1000,13 @@ export default function ResultsPage() {
           >
             📊 Export Dati Excel
           </Button>
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600"
+            onClick={handleExportWithFormulas}
+          >
+            🧮 Excel con Formule
+          </Button>
         </div>
       </div>
     </div>
