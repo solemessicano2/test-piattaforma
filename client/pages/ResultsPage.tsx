@@ -637,13 +637,33 @@ export default function ResultsPage() {
       </header>
 
       <div className="container mx-auto px-6 py-8 max-w-6xl">
+        {/* Demo Banner */}
+        {!answers && (
+          <div className="mb-8">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">!</span>
+                </div>
+                <div>
+                  <h3 className="text-yellow-800 font-semibold">Risultati Demo</h3>
+                  <p className="text-yellow-700 text-sm">
+                    Questi sono risultati di esempio generati automaticamente. Per ottenere risultati reali,
+                    completa prima il test PID-5.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Results Header */}
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Risultati PID-5 Completati!
+            {!answers ? "Risultati PID-5 Demo" : "Risultati PID-5 Completati!"}
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Inventario della Personalità per DSM-5 - Profilo clinico generato
