@@ -45,7 +45,7 @@ export default function ResultsPage() {
     // Simulate processing time
     const timer = setTimeout(() => {
       if (answers) {
-        const profile = processPID5CompleteResults(answers);
+        const profile = processOfficialPID5Results(answers);
         setPid5Profile(profile);
       }
       setIsProcessing(false);
@@ -616,7 +616,7 @@ export default function ResultsPage() {
                         <Alert>
                           <AlertTriangle className="h-4 w-4" />
                           <AlertDescription className="text-xs">
-                            Punteggio clinicamente significativo (T≥65)
+                            Punteggio clinicamente significativo (T��65)
                           </AlertDescription>
                         </Alert>
                       )}
