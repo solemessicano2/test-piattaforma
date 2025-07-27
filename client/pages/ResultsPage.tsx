@@ -396,8 +396,8 @@ export default function ResultsPage() {
     csvContent += "RISPOSTE INDIVIDUALI CON CALCOLI\n";
     csvContent += "ID Item,Risposta Originale,Invertito,Punteggio Finale,Formula Applicata,Faccetta\n";
 
-    testData.items.forEach((item) => {
-      const answer = answers[item.id];
+    currentTestData.items.forEach((item) => {
+      const answer = currentAnswers[item.id];
       const originalScore = answer !== undefined ? parseInt(answer) : "";
       const isReversed = reversedItems.includes(item.id);
       const finalScore = answer !== undefined ?
@@ -629,7 +629,7 @@ export default function ResultsPage() {
                 onClick={handleExportWithFormulas}
                 className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
               >
-                🧮 Excel + Formule
+                ���� Excel + Formule
               </Button>
             </div>
           </div>
