@@ -878,15 +878,15 @@ export default function ResultsPage() {
             {pid5Profile && (
               <div className="space-y-8">
                 <Alert
-                  className={`border-2 ${getRiskColor(pid5Profile.overallRisk)}`}
+                  className={`border-2 ${getRiskColor(pid5Profile.overallSeverity)}`}
                 >
                   <AlertTriangle className="h-5 w-5" />
                   <AlertDescription className="text-base">
                     <strong>
-                      Livello di Rischio Complessivo: {pid5Profile.overallRisk}
+                      Severità Complessiva: {pid5Profile.overallSeverity}
                     </strong>
                     <br />
-                    {pid5Profile.overallRisk === "Basso"
+                    {pid5Profile.overallSeverity === "Basso" || pid5Profile.overallSeverity === "Molto Basso"
                       ? "Il profilo non evidenzia problematiche clinicamente significative."
                       : "Il profilo evidenzia alcune aree che potrebbero richiedere attenzione clinica."}
                   </AlertDescription>
