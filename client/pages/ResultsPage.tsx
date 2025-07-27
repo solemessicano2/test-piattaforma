@@ -70,14 +70,16 @@ export default function ResultsPage() {
     );
   }
 
-  const getRiskColor = (risk: string) => {
-    switch (risk) {
+  const getRiskColor = (severity: string) => {
+    switch (severity) {
       case "Molto Elevato":
         return "border-red-500 bg-red-50";
       case "Elevato":
         return "border-orange-500 bg-orange-50";
-      case "Moderato":
+      case "Moderatamente Elevato":
         return "border-yellow-500 bg-yellow-50";
+      case "Medio":
+        return "border-blue-500 bg-blue-50";
       default:
         return "border-green-500 bg-green-50";
     }
