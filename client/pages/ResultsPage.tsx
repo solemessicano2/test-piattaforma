@@ -295,7 +295,7 @@ export default function ResultsPage() {
     // Header information
     let csvContent = "PID-5 - Dati Grezzi di Somministrazione\n";
     csvContent += `Data Elaborazione,${currentDate}\n`;
-    csvContent += `Numero Item Valutati,${Object.keys(answers).length}\n`;
+    csvContent += `Numero Item Valutati,${Object.keys(currentAnswers).length}\n`;
     csvContent += `Severità Complessiva,${pid5Profile.overallSeverity}\n`;
     csvContent += `Punteggio Medio Complessivo,${averageMeanScore.toFixed(2)}\n\n`;
 
