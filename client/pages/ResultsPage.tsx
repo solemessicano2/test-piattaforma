@@ -263,8 +263,8 @@ export default function ResultsPage() {
     let csvContent = "PID-5 - Dati Grezzi di Somministrazione\n";
     csvContent += `Data Elaborazione,${currentDate}\n`;
     csvContent += `Numero Item Valutati,${Object.keys(answers).length}\n`;
-    csvContent += `Livello Rischio Complessivo,${pid5Profile.overallRisk}\n`;
-    csvContent += `T-Score Medio,${Math.round(pid5Profile.globalSeverity)}\n\n`;
+    csvContent += `Severità Complessiva,${pid5Profile.overallSeverity}\n`;
+    csvContent += `Punteggio Medio Complessivo,${averageMeanScore.toFixed(2)}\n\n`;
 
     // Domain summary
     csvContent += "PUNTEGGI PER DOMINI\n";
