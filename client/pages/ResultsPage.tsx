@@ -686,7 +686,7 @@ export default function ResultsPage() {
                     variant="secondary"
                     className="bg-white/80 text-gray-700"
                   >
-                    {Object.keys(answers).length} item valutati
+                    {Object.keys(currentAnswers).length} item valutati
                   </Badge>
                 </div>
                 <div className="text-center">
