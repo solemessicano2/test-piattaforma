@@ -108,6 +108,8 @@ export default function ResultsPage() {
       pid5Profile.domainScores.length
     : 0;
 
+  const averageTScore = averageMeanScore * 50; // Approssimazione per compatibilità template
+
   const handleDownloadPDF = () => {
     // Create a clean version for printing
     const printWindow = window.open("", "_blank");
