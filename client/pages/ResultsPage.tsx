@@ -33,7 +33,7 @@ export default function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(true);
-  const [pid5Profile, setPid5Profile] = useState<PID5CompleteProfile | null>(
+  const [pid5Profile, setPid5Profile] = useState<PID5OfficialProfile | null>(
     null,
   );
   const [isAuthenticated, setIsAuthenticated] = useState(false);
