@@ -177,8 +177,8 @@ export default function ResultsPage() {
           <p>Data: ${currentDate}</p>
         </div>
 
-        <div class="risk-level risk-${pid5Profile.overallRisk.toLowerCase().replace(" ", "-")}">
-          Livello di Rischio Complessivo: ${pid5Profile.overallRisk}
+        <div class="risk-level risk-${pid5Profile.overallSeverity.toLowerCase().replace(" ", "-")}">
+          Severità Complessiva: ${pid5Profile.overallSeverity}
         </div>
 
         <h2>Risultati per Domini</h2>
