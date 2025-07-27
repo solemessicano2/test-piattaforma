@@ -232,14 +232,17 @@ export default function ResultsPage() {
 
     // Generate CSV data with raw scores
     const csvData = generateExcelData();
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
 
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `PID5_Dati_Grezzi_${new Date().toLocaleDateString('it-IT').replace(/\//g, '-')}.csv`);
-      link.style.visibility = 'hidden';
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `PID5_Dati_Grezzi_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.csv`,
+      );
+      link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -247,43 +250,50 @@ export default function ResultsPage() {
   };
 
   const generateExcelData = () => {
-    if (!pid5Profile || !answers || !testData) return '';
+    if (!pid5Profile || !answers || !testData) return "";
 
-    const currentDate = new Date().toLocaleDateString('it-IT');
+    const currentDate = new Date().toLocaleDateString("it-IT");
 
     // Header information
-    let csvContent = 'PID-5 - Dati Grezzi di Somministrazione\n';
+    let csvContent = "PID-5 - Dati Grezzi di Somministrazione\n";
     csvContent += `Data Elaborazione,${currentDate}\n`;
     csvContent += `Numero Item Valutati,${Object.keys(answers).length}\n`;
     csvContent += `Livello Rischio Complessivo,${pid5Profile.overallRisk}\n`;
     csvContent += `T-Score Medio,${Math.round(pid5Profile.globalSeverity)}\n\n`;
 
     // Domain summary
-    csvContent += 'PUNTEGGI PER DOMINI\n';
-    csvContent += 'Dominio,Punteggio Grezzo,T-Score,Livello,Significatività Clinica\n';
-    pid5Profile.domainResults.forEach(domain => {
-      csvContent += `${domain.domain},${domain.score},${domain.tScore},${domain.level},${domain.clinicalSignificance ? 'Sì' : 'No'}\n`;
+    csvContent += "PUNTEGGI PER DOMINI\n";
+    csvContent +=
+      "Dominio,Punteggio Grezzo,T-Score,Livello,Significatività Clinica\n";
+    pid5Profile.domainResults.forEach((domain) => {
+      csvContent += `${domain.domain},${domain.score},${domain.tScore},${domain.level},${domain.clinicalSignificance ? "Sì" : "No"}\n`;
     });
-    csvContent += '\n';
+    csvContent += "\n";
 
     // Facet scores for clinically significant ones
-    csvContent += 'FACCETTE CLINICAMENTE SIGNIFICATIVE\n';
-    csvContent += 'Dominio,Faccetta,Punteggio Grezzo,T-Score\n';
-    pid5Profile.domainResults.forEach(domain => {
-      domain.facets.filter(f => f.clinicalSignificance).forEach(facet => {
-        csvContent += `${domain.domain},${facet.facet},${facet.score},${facet.tScore}\n`;
-      });
+    csvContent += "FACCETTE CLINICAMENTE SIGNIFICATIVE\n";
+    csvContent += "Dominio,Faccetta,Punteggio Grezzo,T-Score\n";
+    pid5Profile.domainResults.forEach((domain) => {
+      domain.facets
+        .filter((f) => f.clinicalSignificance)
+        .forEach((facet) => {
+          csvContent += `${domain.domain},${facet.facet},${facet.score},${facet.tScore}\n`;
+        });
     });
-    csvContent += '\n';
+    csvContent += "\n";
 
     // Individual item responses
-    csvContent += 'RISPOSTE INDIVIDUALI\n';
-    csvContent += 'ID Item,Domanda,Risposta (0-3),Risposta Testuale,Dominio,Faccetta\n';
+    csvContent += "RISPOSTE INDIVIDUALI\n";
+    csvContent +=
+      "ID Item,Domanda,Risposta (0-3),Risposta Testuale,Dominio,Faccetta\n";
 
-    testData.items.forEach(item => {
+    testData.items.forEach((item) => {
       const answer = answers[item.id];
-      const answerText = answer !== undefined ? testData.scaleLikert[parseInt(answer)] : 'Non risposto';
-      const answerValue = answer !== undefined ? answer : '';
+      const answerText =
+        answer !== undefined
+          ? testData.scaleLikert[parseInt(answer)]
+          : "Non risposto";
+      const answerValue = answer !== undefined ? answer : "";
 
       // Escape commas and quotes in text for CSV
       const questionText = `"${item.text.replace(/"/g, '""')}"`;
@@ -292,14 +302,14 @@ export default function ResultsPage() {
       csvContent += `${item.id},${questionText},${answerValue},${answerTextEscaped},${item.domain},${item.facet}\n`;
     });
 
-    csvContent += '\n';
-    csvContent += 'NOTE CLINICHE\n';
+    csvContent += "\n";
+    csvContent += "NOTE CLINICHE\n";
     pid5Profile.clinicalNotes.forEach((note, index) => {
       csvContent += `Nota ${index + 1},"${note.replace(/"/g, '""')}"\n`;
     });
 
-    csvContent += '\n';
-    csvContent += 'RACCOMANDAZIONI\n';
+    csvContent += "\n";
+    csvContent += "RACCOMANDAZIONI\n";
     pid5Profile.recommendations.forEach((rec, index) => {
       csvContent += `Raccomandazione ${index + 1},"${rec.replace(/"/g, '""')}"\n`;
     });
