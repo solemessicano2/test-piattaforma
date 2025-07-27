@@ -104,7 +104,8 @@ export default function ResultsPage() {
   };
 
   const averageMeanScore = pid5Profile
-    ? pid5Profile.domainScores.reduce((sum, d) => sum + d.meanScore, 0) / pid5Profile.domainScores.length
+    ? pid5Profile.domainScores.reduce((sum, d) => sum + d.meanScore, 0) /
+      pid5Profile.domainScores.length
     : 0;
 
   const handleDownloadPDF = () => {
