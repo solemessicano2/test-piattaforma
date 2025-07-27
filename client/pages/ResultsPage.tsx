@@ -417,6 +417,14 @@ export default function ResultsPage() {
               >
                 📊 Export Excel
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportWithFormulas}
+                className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+              >
+                🧮 Excel + Formule
+              </Button>
             </div>
           </div>
         </div>
