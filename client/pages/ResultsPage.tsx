@@ -16,12 +16,7 @@ import {
   ArrowLeft,
   Download,
   Share2,
-  Target,
-  TrendingUp,
-  Brain,
-  Heart,
-  Users,
-  Lightbulb,
+
   CheckCircle,
   BarChart3,
   AlertTriangle,
