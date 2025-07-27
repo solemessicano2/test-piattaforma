@@ -288,7 +288,7 @@ export default function ResultsPage() {
   };
 
   const generateExcelData = () => {
-    if (!pid5Profile || !answers || !testData) return "";
+    if (!pid5Profile) return "";
 
     const currentDate = new Date().toLocaleDateString("it-IT");
 
