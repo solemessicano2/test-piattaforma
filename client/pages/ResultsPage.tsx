@@ -407,116 +407,55 @@ export default function ResultsPage() {
     csvContent += "Disinibizione,=MEDIA(B85,B79,B77),${pid5Profile.domainScores.find(d => d.domain === 'Disinibizione')?.meanScore.toFixed(2) || '0.00'}\n";
     csvContent += "Psicoticismo,=MEDIA(B76,B84,B87),${pid5Profile.domainScores.find(d => d.domain === 'Psicoticismo')?.meanScore.toFixed(2) || '0.00'}\n\n";
 
-    // SEZIONE 3: CALCOLO FACCETTE CON FORMULE
-    csvContent += "CALCOLO PUNTEGGI FACCETTE\n";
-    csvContent += "Faccetta,Item Inclusi,Somma Grezza,Numero Item,Punteggio Medio,Formula Calcolo\n";
+    // FORMULE PRONTE PER EXCEL
+    csvContent += "=== FORMULE PRINCIPALI ===\n";
+    csvContent += "Inserisci queste formule direttamente in Excel:\n\n";
 
-    // Definizione degli item per faccetta (come nel sistema di scoring)
-    const facetItems = {
-      "Affettività ridotta": [8, 45, 84, 91, 101, 167, 184],
-      "Anedonia": [1, 23, 26, 30, 124, 155, 157, 189],
-      "Angoscia di separazione": [12, 50, 57, 64, 127, 149, 175],
-      "Ansia": [79, 93, 95, 96, 109, 110, 130, 141, 174],
-      "Convinzioni ed esperienze inusuali": [94, 99, 106, 139, 143, 150, 194, 209],
-      "Depressività": [27, 61, 66, 81, 86, 104, 119, 148, 151, 163, 168, 169, 178, 212],
-      "Disregolazione percettiva": [36, 37, 42, 44, 59, 77, 83, 154, 192, 193, 213, 217],
-      "Distraibilità": [6, 29, 47, 68, 88, 118, 132, 144, 199],
-      "Eccentricità": [5, 21, 24, 25, 33, 52, 55, 70, 71, 152, 172, 185, 205],
-      "Evitamento dell'intimità": [89, 97, 108, 120, 145, 203],
-      "Grandiosità": [40, 65, 114, 179, 187, 197],
-      "Impulsività": [4, 16, 17, 22, 58, 204],
-      "Inganno": [41, 53, 56, 76, 126, 134, 142, 206, 214, 218],
-      "Insensibilità": [11, 13, 19, 54, 72, 73, 90, 153, 166, 183, 198, 200, 207, 208],
-      "Irresponsabilità": [31, 129, 156, 160, 171, 201, 210],
-      "Labilità emotiva": [18, 62, 102, 122, 138, 165, 181],
-      "Manipolatorietà": [107, 125, 162, 180, 219],
-      "Ostilità": [28, 32, 38, 85, 92, 116, 158, 170, 188, 216],
-      "Perfezionismo rigido": [34, 49, 105, 115, 123, 135, 140, 176, 196, 220],
-      "Perseverazione": [46, 51, 60, 78, 80, 100, 121, 128, 137],
-      "Ricerca di attenzione": [14, 43, 74, 111, 113, 173, 191, 211],
-      "Ritiro": [10, 20, 75, 82, 136, 146, 147, 161, 182, 186],
-      "Sospettosità": [2, 103, 117, 131, 133, 177, 190],
-      "Sottomissione": [9, 15, 63, 202],
-      "Tendenza a correre rischi": [3, 7, 35, 39, 48, 67, 69, 87, 98, 112, 159, 164, 195, 215]
-    };
+    csvContent += "INVERSIONE ITEM (per item che richiedono inversione):\n";
+    csvContent += "=3-[CELLA_RISPOSTA_ORIGINALE]\n\n";
 
-    Object.entries(facetItems).forEach(([facetName, itemIds]) => {
-      let rawScore = 0;
-      let validItems = 0;
+    csvContent += "CALCOLO FACCETTA (esempio Anedonia - item 1,23,26,30,124,155,157,189):\n";
+    csvContent += "=MEDIA(D9;D31;D34;D38;D132;D163;D165;D197)\n\n";
 
-      itemIds.forEach(itemId => {
-        const answer = currentAnswers[itemId];
-        if (answer !== undefined) {
-          let score = parseInt(answer);
-          if (reversedItems.includes(itemId)) {
-            score = 3 - score;
-          }
-          rawScore += score;
-          validItems++;
-        }
-      });
+    csvContent += "CALCOLO DOMINIO (esempio Affettività Negativa - media di 3 faccette):\n";
+    csvContent += "=MEDIA([cella_labilità];[cella_ansia];[cella_separazione])\n\n";
 
-      const meanScore = validItems > 0 ? rawScore / itemIds.length : 0;
-      const itemsString = itemIds.join("+");
-      const formula = `=(SOMMA(${itemsString}))/${itemIds.length}`;
+    csvContent += "INTERPRETAZIONE AUTOMATICA:\n";
+    csvContent += "=SE(B2>=2.5;\"Molto Elevato\";SE(B2>=2;\"Elevato\";SE(B2>=1.5;\"Moderatamente Elevato\";SE(B2>=1;\"Medio\";SE(B2>=0.5;\"Basso\";\"Molto Basso\")))))\n\n";
 
-      csvContent += `${facetName},"${itemIds.join(", ")}",${rawScore},${itemIds.length},${meanScore.toFixed(2)},${formula}\n`;
+    csvContent += "CONTROLLO SOGLIA CLINICA:\n";
+    csvContent += "=SE(B2>=2;\"CLINICAMENTE ELEVATO\";\"Normale\")\n\n";
+
+    // LISTA COMPLETA ITEM INVERTITI
+    csvContent += "=== ITEM DA INVERTIRE ===\n";
+    csvContent += "Item,Formula Inversione\n";
+    reversedItems.forEach(item => {
+      csvContent += `${item},=3-[CELLA_${item}]\n`;
     });
     csvContent += "\n";
 
-    // SEZIONE 4: CALCOLO DOMINI
-    csvContent += "CALCOLO PUNTEGGI DOMINI\n";
-    csvContent += "Dominio,Faccette Principali,Punteggio Medio,Formula Calcolo\n";
+    // MAPPING COMPLETO FACCETTE
+    csvContent += "=== MAPPING FACCETTE-ITEM ===\n";
+    csvContent += "Faccetta,Item Inclusi,Formula Excel Esempio\n";
+    csvContent += "Anedonia,\"1,23,26,30,124,155,157,189\",=MEDIA(D9;D31;D34;D38;D132;D163;D165;D197)\n";
+    csvContent += "Ansia,\"79,93,95,96,109,110,130,141,174\",=MEDIA(D87;D101;D103;D104;D117;D118;D138;D149;D182)\n";
+    csvContent += "Impulsività,\"4,16,17,22,58,204\",=MEDIA(D12;D24;D25;D30;D66;D212)\n";
+    csvContent += "Manipolatorietà,\"107,125,162,180,219\",=MEDIA(D115;D133;D170;D188;D227)\n";
+    csvContent += "Grandiosità,\"40,65,114,179,187,197\",=MEDIA(D48;D73;D122;D187;D195;D205)\n\n";
 
-    const domainFacets = {
-      "Affettività negativa": ["Labilità emotiva", "Ansia", "Angoscia di separazione"],
-      "Distacco": ["Ritiro", "Anedonia", "Evitamento dell'intimità"],
-      "Antagonismo": ["Manipolatorietà", "Inganno", "Grandiosità"],
-      "Disinibizione": ["Irresponsabilità", "Impulsività", "Distraibilità"],
-      "Psicoticismo": ["Convinzioni ed esperienze inusuali", "Eccentricità", "Disregolazione percettiva"]
-    };
+    csvContent += "=== ISTRUZIONI ===\n";
+    csvContent += "1. Apri questo file in Excel\n";
+    csvContent += "2. Inserisci le risposte (0-3) nella colonna B a partire dalla riga 9\n";
+    csvContent += "3. Per gli item invertiti, usa la formula =3-[cella] nella colonna D\n";
+    csvContent += "4. Calcola ogni faccetta con la formula MEDIA dei suoi item\n";
+    csvContent += "5. Calcola ogni dominio con la MEDIA delle sue 3 faccette principali\n";
+    csvContent += "6. Applica le formule di interpretazione\n\n";
 
-    Object.entries(domainFacets).forEach(([domainName, facetNames]) => {
-      const domainScore = pid5Profile.domainScores.find(d => d.domain === domainName);
-      const formula = `=(MEDIA(${facetNames.join(", ")}))`;
-
-      csvContent += `${domainName},"${facetNames.join(", ")}",${domainScore?.meanScore.toFixed(2) || "0.00"},${formula}\n`;
+    csvContent += "=== RISULTATI ATTUALI ===\n";
+    csvContent += "Dominio,Punteggio,Interpretazione\n";
+    pid5Profile.domainScores.forEach(domain => {
+      csvContent += `${domain.domain},${domain.meanScore.toFixed(2)},${domain.interpretation}\n`;
     });
-    csvContent += "\n";
-
-    // SEZIONE 5: CRITERI DI INTERPRETAZIONE
-    csvContent += "CRITERI DI INTERPRETAZIONE DSM-5\n";
-    csvContent += "Punteggio Medio,Interpretazione,Soglia Clinica\n";
-    csvContent += "≥2.5,Molto Elevato,Sì\n";
-    csvContent += "≥2.0,Elevato,Sì\n";
-    csvContent += "≥1.5,Moderatamente Elevato,No\n";
-    csvContent += "≥1.0,Medio,No\n";
-    csvContent += "≥0.5,Basso,No\n";
-    csvContent += "<0.5,Molto Basso,No\n\n";
-
-    // SEZIONE 6: FORMULE EXCEL PER COPIA-INCOLLA
-    csvContent += "FORMULE EXCEL DA UTILIZZARE\n";
-    csvContent += "Descrizione,Formula Excel\n";
-    csvContent += "Inversione Item,=3-CELLA_ORIGINALE\n";
-    csvContent += "Punteggio Faccetta,=SOMMA(range_item)/CONTA.NUMERI(range_item)\n";
-    csvContent += "Punteggio Dominio,=MEDIA(cella_faccetta1:cella_faccetta3)\n";
-    csvContent += "Controllo Soglia Clinica,=SE(punteggio>=2;\"Elevato\";\"Normale\")\n";
-    csvContent += "Interpretazione,=SE(punteggio>=2.5;\"Molto Elevato\";SE(punteggio>=2;\"Elevato\";SE(punteggio>=1.5;\"Moderatamente Elevato\";SE(punteggio>=1;\"Medio\";SE(punteggio>=0.5;\"Basso\";\"Molto Basso\")))))\n\n";
-
-    // SEZIONE 7: ISTRUZIONI
-    csvContent += "ISTRUZIONI PER L'USO\n";
-    csvContent += "1. Importare questo file in Excel\n";
-    csvContent += "2. Inserire le risposte grezze (0-3) nella colonna appropriata\n";
-    csvContent += "3. Applicare le formule di inversione agli item indicati\n";
-    csvContent += "4. Calcolare i punteggi delle faccette usando le formule indicate\n";
-    csvContent += "5. Calcolare i punteggi dei domini usando la media delle 3 faccette principali\n";
-    csvContent += "6. Applicare i criteri di interpretazione DSM-5\n\n";
-
-    csvContent += "NOTE IMPORTANTI\n";
-    csvContent += "- Il calcolo è valido solo se <25% degli item per faccetta sono mancanti\n";
-    csvContent += "- I domini richiedono tutte e 3 le faccette principali per essere calcolabili\n";
-    csvContent += "- Soglia di significatività clinica: ≥2.0 per punteggi medi\n";
-    csvContent += "- Questo sistema segue esattamente le specifiche DSM-5 per il PID-5\n";
 
     return csvContent;
   };
