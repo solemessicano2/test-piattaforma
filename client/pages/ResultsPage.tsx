@@ -395,6 +395,14 @@ export default function ResultsPage() {
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportToExcel}
+                className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+              >
+                📊 Export Excel
+              </Button>
             </div>
           </div>
         </div>
