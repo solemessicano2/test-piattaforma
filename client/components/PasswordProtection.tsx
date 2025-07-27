@@ -11,7 +11,10 @@ interface PasswordProtectionProps {
   title?: string;
 }
 
-export default function PasswordProtection({ onAuthenticated, title = "Accesso Risultati" }: PasswordProtectionProps) {
+export default function PasswordProtection({
+  onAuthenticated,
+  title = "Accesso Risultati",
+}: PasswordProtectionProps) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -27,7 +30,9 @@ export default function PasswordProtection({ onAuthenticated, title = "Accesso R
       if (password === "risultato") {
         onAuthenticated();
       } else {
-        setError("Password non corretta. Accesso consentito solo al somministratore.");
+        setError(
+          "Password non corretta. Accesso consentito solo al somministratore.",
+        );
       }
       setIsSubmitting(false);
     }, 500);
@@ -40,7 +45,9 @@ export default function PasswordProtection({ onAuthenticated, title = "Accesso R
           <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900">
+            {title}
+          </CardTitle>
           <p className="text-gray-600 mt-2">
             Inserisci la password per accedere ai risultati del test
           </p>
@@ -48,7 +55,10 @@ export default function PasswordProtection({ onAuthenticated, title = "Accesso R
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
                 Password Somministratore
               </Label>
               <div className="relative">
@@ -83,8 +93,8 @@ export default function PasswordProtection({ onAuthenticated, title = "Accesso R
               </Alert>
             )}
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               disabled={isSubmitting}
             >
