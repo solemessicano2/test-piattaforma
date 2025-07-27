@@ -658,30 +658,32 @@ export default function ResultsPage() {
         {/* Overall Score Card */}
         {pid5Profile && (
           <Card
-            className={`mb-8 border-2 shadow-xl ${getRiskColor(pid5Profile.overallRisk)}`}
+            className={`mb-8 border-2 shadow-xl ${getRiskColor(pid5Profile.overallSeverity)}`}
           >
             <CardContent className="p-8">
               <div className="grid md:grid-cols-3 gap-8 items-center">
                 <div className="text-center">
                   <div className="text-5xl font-bold mb-2 text-gray-900">
-                    {Math.round(averageTScore)}
+                    {averageMeanScore.toFixed(2)}
                   </div>
-                  <div className="text-gray-600">T-Score Medio</div>
+                  <div className="text-gray-600">Punteggio Medio</div>
                 </div>
                 <div className="space-y-4">
                   <h3 className="text-2xl font-bold text-gray-900">
-                    Livello di Rischio: {pid5Profile.overallRisk}
+                    Severità: {pid5Profile.overallSeverity}
                   </h3>
-                  {pid5Profile.primaryDomains.length > 0 && (
+                  {pid5Profile.domainScores.filter(d => d.meanScore >= 2.0).length > 0 && (
                     <div>
                       <p className="text-gray-600 mb-2">Domini Elevati:</p>
                       <div className="flex flex-wrap gap-2">
-                        {pid5Profile.primaryDomains.map((domain) => (
+                        {pid5Profile.domainScores
+                          .filter(d => d.meanScore >= 2.0)
+                          .map((domain) => (
                           <Badge
-                            key={domain}
-                            className={getDomainColor(domain)}
+                            key={domain.domain}
+                            className={getDomainColor(domain.domain)}
                           >
-                            {domain}
+                            {domain.domain}
                           </Badge>
                         ))}
                       </div>
@@ -695,7 +697,7 @@ export default function ResultsPage() {
                   </Badge>
                 </div>
                 <div className="text-center">
-                  {pid5Profile.overallRisk === "Basso" ? (
+                  {pid5Profile.overallSeverity === "Basso" || pid5Profile.overallSeverity === "Molto Basso" ? (
                     <Shield className="w-16 h-16 mx-auto mb-4 text-green-600" />
                   ) : (
                     <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-orange-600" />
