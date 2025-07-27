@@ -9,9 +9,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  processPID5CompleteResults,
-  type PID5CompleteProfile,
-} from "@/utils/pid5-complete-scoring";
+  processOfficialPID5Results,
+  type PID5OfficialProfile,
+} from "@/utils/pid5-official-scoring";
 import {
   ArrowLeft,
   Download,
