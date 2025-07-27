@@ -308,7 +308,7 @@ export default function TestPage() {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={answeredQuestions < (testData?.items?.length || 0)}
+              disabled={answeredQuestions < Math.ceil((testData?.items?.length || 0) * 0.8)}
               className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600"
             >
               <CheckCircle className="w-4 h-4" />
