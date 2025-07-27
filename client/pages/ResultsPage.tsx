@@ -321,6 +321,176 @@ export default function ResultsPage() {
     return csvContent;
   };
 
+  const handleExportWithFormulas = () => {
+    if (!pid5Profile || !answers || !testData) return;
+
+    // Generate Excel data with formulas
+    const excelData = generateExcelWithFormulas();
+    const blob = new Blob([excelData], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `PID5_Con_Formule_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.csv`,
+      );
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const generateExcelWithFormulas = () => {
+    if (!pid5Profile || !answers || !testData) return "";
+
+    const currentDate = new Date().toLocaleDateString("it-IT");
+
+    let csvContent = "PID-5 - CALCOLO RISULTATI CON FORMULE DSM-5\n";
+    csvContent += `Data Elaborazione,${currentDate}\n\n`;
+
+    // SEZIONE 1: ITEM INVERTITI
+    csvContent += "ITEM DA INVERTIRE (Secondo DSM-5)\n";
+    csvContent += "Item ID,Formula Inversione,Descrizione\n";
+    const reversedItems = [7, 30, 35, 58, 87, 90, 96, 97, 98, 131, 142, 155, 164, 177, 210, 215];
+    reversedItems.forEach(itemId => {
+      csvContent += `${itemId},=3-VALORE_ORIGINALE,Item ${itemId} deve essere invertito (3-x)\n`;
+    });
+    csvContent += "\n";
+
+    // SEZIONE 2: RISPOSTE CON FORMULE DI INVERSIONE
+    csvContent += "RISPOSTE INDIVIDUALI CON CALCOLI\n";
+    csvContent += "ID Item,Risposta Originale,Invertito,Punteggio Finale,Formula Applicata,Faccetta\n";
+
+    testData.items.forEach((item) => {
+      const answer = answers[item.id];
+      const originalScore = answer !== undefined ? parseInt(answer) : "";
+      const isReversed = reversedItems.includes(item.id);
+      const finalScore = answer !== undefined ?
+        (isReversed ? 3 - parseInt(answer) : parseInt(answer)) : "";
+      const formula = isReversed ? `=3-${originalScore}` : `=${originalScore}`;
+      const appliedFormula = isReversed ? "INVERSIONE" : "DIRETTA";
+
+      csvContent += `${item.id},${originalScore},${isReversed ? "SÌ" : "NO"},${finalScore},${formula},${item.facet}\n`;
+    });
+    csvContent += "\n";
+
+    // SEZIONE 3: CALCOLO FACCETTE CON FORMULE
+    csvContent += "CALCOLO PUNTEGGI FACCETTE\n";
+    csvContent += "Faccetta,Item Inclusi,Somma Grezza,Numero Item,Punteggio Medio,Formula Calcolo\n";
+
+    // Definizione degli item per faccetta (come nel sistema di scoring)
+    const facetItems = {
+      "Affettività ridotta": [8, 45, 84, 91, 101, 167, 184],
+      "Anedonia": [1, 23, 26, 30, 124, 155, 157, 189],
+      "Angoscia di separazione": [12, 50, 57, 64, 127, 149, 175],
+      "Ansia": [79, 93, 95, 96, 109, 110, 130, 141, 174],
+      "Convinzioni ed esperienze inusuali": [94, 99, 106, 139, 143, 150, 194, 209],
+      "Depressività": [27, 61, 66, 81, 86, 104, 119, 148, 151, 163, 168, 169, 178, 212],
+      "Disregolazione percettiva": [36, 37, 42, 44, 59, 77, 83, 154, 192, 193, 213, 217],
+      "Distraibilità": [6, 29, 47, 68, 88, 118, 132, 144, 199],
+      "Eccentricità": [5, 21, 24, 25, 33, 52, 55, 70, 71, 152, 172, 185, 205],
+      "Evitamento dell'intimità": [89, 97, 108, 120, 145, 203],
+      "Grandiosità": [40, 65, 114, 179, 187, 197],
+      "Impulsività": [4, 16, 17, 22, 58, 204],
+      "Inganno": [41, 53, 56, 76, 126, 134, 142, 206, 214, 218],
+      "Insensibilità": [11, 13, 19, 54, 72, 73, 90, 153, 166, 183, 198, 200, 207, 208],
+      "Irresponsabilità": [31, 129, 156, 160, 171, 201, 210],
+      "Labilità emotiva": [18, 62, 102, 122, 138, 165, 181],
+      "Manipolatorietà": [107, 125, 162, 180, 219],
+      "Ostilità": [28, 32, 38, 85, 92, 116, 158, 170, 188, 216],
+      "Perfezionismo rigido": [34, 49, 105, 115, 123, 135, 140, 176, 196, 220],
+      "Perseverazione": [46, 51, 60, 78, 80, 100, 121, 128, 137],
+      "Ricerca di attenzione": [14, 43, 74, 111, 113, 173, 191, 211],
+      "Ritiro": [10, 20, 75, 82, 136, 146, 147, 161, 182, 186],
+      "Sospettosità": [2, 103, 117, 131, 133, 177, 190],
+      "Sottomissione": [9, 15, 63, 202],
+      "Tendenza a correre rischi": [3, 7, 35, 39, 48, 67, 69, 87, 98, 112, 159, 164, 195, 215]
+    };
+
+    Object.entries(facetItems).forEach(([facetName, itemIds]) => {
+      let rawScore = 0;
+      let validItems = 0;
+
+      itemIds.forEach(itemId => {
+        const answer = answers[itemId];
+        if (answer !== undefined) {
+          let score = parseInt(answer);
+          if (reversedItems.includes(itemId)) {
+            score = 3 - score;
+          }
+          rawScore += score;
+          validItems++;
+        }
+      });
+
+      const meanScore = validItems > 0 ? rawScore / itemIds.length : 0;
+      const itemsString = itemIds.join("+");
+      const formula = `=(SOMMA(${itemsString}))/${itemIds.length}`;
+
+      csvContent += `${facetName},"${itemIds.join(", ")}",${rawScore},${itemIds.length},${meanScore.toFixed(2)},${formula}\n`;
+    });
+    csvContent += "\n";
+
+    // SEZIONE 4: CALCOLO DOMINI
+    csvContent += "CALCOLO PUNTEGGI DOMINI\n";
+    csvContent += "Dominio,Faccette Principali,Punteggio Medio,Formula Calcolo\n";
+
+    const domainFacets = {
+      "Affettività negativa": ["Labilità emotiva", "Ansia", "Angoscia di separazione"],
+      "Distacco": ["Ritiro", "Anedonia", "Evitamento dell'intimità"],
+      "Antagonismo": ["Manipolatorietà", "Inganno", "Grandiosità"],
+      "Disinibizione": ["Irresponsabilità", "Impulsività", "Distraibilità"],
+      "Psicoticismo": ["Convinzioni ed esperienze inusuali", "Eccentricità", "Disregolazione percettiva"]
+    };
+
+    Object.entries(domainFacets).forEach(([domainName, facetNames]) => {
+      const domainScore = pid5Profile.domainScores.find(d => d.domain === domainName);
+      const formula = `=(MEDIA(${facetNames.join(", ")}))`;
+
+      csvContent += `${domainName},"${facetNames.join(", ")}",${domainScore?.meanScore.toFixed(2) || "0.00"},${formula}\n`;
+    });
+    csvContent += "\n";
+
+    // SEZIONE 5: CRITERI DI INTERPRETAZIONE
+    csvContent += "CRITERI DI INTERPRETAZIONE DSM-5\n";
+    csvContent += "Punteggio Medio,Interpretazione,Soglia Clinica\n";
+    csvContent += "≥2.5,Molto Elevato,Sì\n";
+    csvContent += "≥2.0,Elevato,Sì\n";
+    csvContent += "≥1.5,Moderatamente Elevato,No\n";
+    csvContent += "≥1.0,Medio,No\n";
+    csvContent += "≥0.5,Basso,No\n";
+    csvContent += "<0.5,Molto Basso,No\n\n";
+
+    // SEZIONE 6: FORMULE EXCEL PER COPIA-INCOLLA
+    csvContent += "FORMULE EXCEL DA UTILIZZARE\n";
+    csvContent += "Descrizione,Formula Excel\n";
+    csvContent += "Inversione Item,=3-CELLA_ORIGINALE\n";
+    csvContent += "Punteggio Faccetta,=SOMMA(range_item)/CONTA.NUMERI(range_item)\n";
+    csvContent += "Punteggio Dominio,=MEDIA(cella_faccetta1:cella_faccetta3)\n";
+    csvContent += "Controllo Soglia Clinica,=SE(punteggio>=2;\"Elevato\";\"Normale\")\n";
+    csvContent += "Interpretazione,=SE(punteggio>=2.5;\"Molto Elevato\";SE(punteggio>=2;\"Elevato\";SE(punteggio>=1.5;\"Moderatamente Elevato\";SE(punteggio>=1;\"Medio\";SE(punteggio>=0.5;\"Basso\";\"Molto Basso\")))))\n\n";
+
+    // SEZIONE 7: ISTRUZIONI
+    csvContent += "ISTRUZIONI PER L'USO\n";
+    csvContent += "1. Importare questo file in Excel\n";
+    csvContent += "2. Inserire le risposte grezze (0-3) nella colonna appropriata\n";
+    csvContent += "3. Applicare le formule di inversione agli item indicati\n";
+    csvContent += "4. Calcolare i punteggi delle faccette usando le formule indicate\n";
+    csvContent += "5. Calcolare i punteggi dei domini usando la media delle 3 faccette principali\n";
+    csvContent += "6. Applicare i criteri di interpretazione DSM-5\n\n";
+
+    csvContent += "NOTE IMPORTANTI\n";
+    csvContent += "- Il calcolo è valido solo se <25% degli item per faccetta sono mancanti\n";
+    csvContent += "- I domini richiedono tutte e 3 le faccette principali per essere calcolabili\n";
+    csvContent += "- Soglia di significatività clinica: ≥2.0 per punteggi medi\n";
+    csvContent += "- Questo sistema segue esattamente le specifiche DSM-5 per il PID-5\n";
+
+    return csvContent;
+  };
+
   // Show password protection first
   if (!isAuthenticated) {
     return (
