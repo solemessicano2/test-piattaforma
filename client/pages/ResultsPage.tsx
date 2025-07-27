@@ -787,7 +787,7 @@ export default function ResultsPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
           <Link to="/">
             <Button size="lg" variant="outline" className="w-full sm:w-auto">
-              Esplora Altri Test
+              Torna alla Dashboard
             </Button>
           </Link>
           <Button
@@ -796,7 +796,14 @@ export default function ResultsPage() {
             onClick={handleDownloadPDF}
           >
             <Download className="w-5 h-5 mr-2" />
-            Scarica Report Completo
+            Scarica Report PDF
+          </Button>
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-emerald-600"
+            onClick={handleExportToExcel}
+          >
+            📊 Export Dati Excel
           </Button>
         </div>
       </div>
