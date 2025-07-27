@@ -323,11 +323,11 @@ export default function ResultsPage() {
     csvContent +=
       "ID Item,Domanda,Risposta (0-3),Risposta Testuale,Dominio,Faccetta\n";
 
-    testData.items.forEach((item) => {
-      const answer = answers[item.id];
+    currentTestData.items.forEach((item) => {
+      const answer = currentAnswers[item.id];
       const answerText =
         answer !== undefined
-          ? testData.scaleLikert[parseInt(answer)]
+          ? currentTestData.scaleLikert[parseInt(answer)]
           : "Non risposto";
       const answerValue = answer !== undefined ? answer : "";
 
