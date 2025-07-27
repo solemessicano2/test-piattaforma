@@ -517,24 +517,25 @@ export default function ResultsPage() {
     );
   }
 
-  // Use demo testData if not provided
+  // Simple demo data
+  const demoAnswers: Record<number, string> = {};
+  if (!answers) {
+    for (let i = 1; i <= 220; i++) {
+      demoAnswers[i] = Math.floor(Math.random() * 4).toString();
+    }
+  }
+
+  const currentAnswers = answers || demoAnswers;
   const currentTestData = testData || {
-    title: "PID-5 - Inventario della Personalità per DSM-5",
-    description: "Valutazione completa della personalità secondo criteri DSM-5",
+    title: "PID-5 Demo",
     items: Array.from({ length: 220 }, (_, i) => ({
       id: i + 1,
-      text: `Domanda demo ${i + 1}`,
-      domain: i < 44 ? "Affettività Negativa" :
-              i < 88 ? "Distacco" :
-              i < 132 ? "Antagonismo" :
-              i < 176 ? "Disinibizione" : "Psicoticismo",
-      facet: "Demo Facet"
+      text: `Domanda ${i + 1}`,
+      domain: "Demo",
+      facet: "Demo"
     })),
-    scaleLikert: ["Per niente vero", "Leggermente vero", "Moderatamente vero", "Molto vero"]
+    scaleLikert: ["Per niente", "Poco", "Moderatamente", "Molto"]
   };
-
-  // Use demo answers if not provided
-  const currentAnswers = answers || generateDemoAnswers();
 
   if (isProcessing) {
     return (
