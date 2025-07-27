@@ -488,6 +488,9 @@ export default function ResultsPage() {
           </Card>
         )}
 
+        {/* Risultati Ufficiali PID-5 secondo DSM-5 */}
+        <OfficialResultsDisplay profile={pid5Profile} answers={answers} />
+
         <Tabs defaultValue="overview" className="space-y-8">
           <TabsList className="grid w-full grid-cols-4 h-12">
             <TabsTrigger
