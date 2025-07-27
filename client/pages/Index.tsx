@@ -36,10 +36,10 @@ export default function Index() {
   ]);
 
   const stats = [
-    { icon: ClipboardList, label: "Test Disponibili", value: "15+" },
-    { icon: Users, label: "Utenti Attivi", value: "12.5K" },
-    { icon: BarChart3, label: "Test Completati", value: "45.2K" },
-    { icon: CheckCircle, label: "Accuratezza", value: "94%" },
+    { icon: ClipboardList, label: "Test Disponibile", value: "PID-5" },
+    { icon: Users, label: "Utenti Attivi", value: "2.1K" },
+    { icon: BarChart3, label: "Test Completati", value: "847" },
+    { icon: CheckCircle, label: "Accuratezza", value: "98%" },
   ];
 
   return (
