@@ -276,15 +276,13 @@ export default function ResultsPage() {
     csvContent += "\n";
 
     // Facet scores for clinically significant ones
-    csvContent += "FACCETTE CLINICAMENTE SIGNIFICATIVE\n";
-    csvContent += "Dominio,Faccetta,Punteggio Grezzo,T-Score\n";
-    pid5Profile.domainResults.forEach((domain) => {
-      domain.facets
-        .filter((f) => f.clinicalSignificance)
-        .forEach((facet) => {
-          csvContent += `${domain.domain},${facet.facet},${facet.score},${facet.tScore}\n`;
-        });
-    });
+    csvContent += "FACCETTE ELEVATE (≥2.0)\n";
+    csvContent += "Faccetta,Punteggio Medio,Interpretazione\n";
+    pid5Profile.facetScores
+      .filter((f) => f.meanScore >= 2.0)
+      .forEach((facet) => {
+        csvContent += `${facet.facet},${facet.meanScore.toFixed(2)},${facet.interpretation}\n`;
+      });
     csvContent += "\n";
 
     // Individual item responses
