@@ -45,44 +45,28 @@ export default function ResultsPage() {
   useEffect(() => {
     // Simulate processing time
     const timer = setTimeout(() => {
-      if (answers) {
-        const profile = processOfficialPID5Results(answers);
+      try {
+        let answersToProcess = answers;
+
+        if (!answers) {
+          // Generate simple demo data if no answers provided
+          answersToProcess = {};
+          for (let i = 1; i <= 220; i++) {
+            // Simple random pattern
+            const score = Math.floor(Math.random() * 4);
+            answersToProcess[i] = score.toString();
+          }
+        }
+
+        const profile = processOfficialPID5Results(answersToProcess);
         setPid5Profile(profile);
-      } else {
-        // Generate demo data if no answers provided (direct access)
-        const demoAnswers = generateDemoAnswers();
-        const profile = processOfficialPID5Results(demoAnswers);
-        setPid5Profile(profile);
+      } catch (error) {
+        console.error("Error processing results:", error);
       }
       setIsProcessing(false);
-    }, 3000);
+    }, 1000); // Ridotto a 1 secondo per test più rapidi
     return () => clearTimeout(timer);
   }, [answers]);
-
-  // Generate demo answers for demonstration purposes
-  const generateDemoAnswers = () => {
-    const demoAnswers: Record<number, string> = {};
-    // Generate responses that will show some elevated scores
-    for (let i = 1; i <= 220; i++) {
-      // Create a pattern that gives realistic clinical results
-      let score;
-      if (i <= 50) {
-        // First 50 items: moderate scores
-        score = Math.floor(Math.random() * 3) + 1; // 1-3
-      } else if (i <= 100) {
-        // Next 50: lower scores
-        score = Math.floor(Math.random() * 2); // 0-1
-      } else if (i <= 150) {
-        // Next 50: mixed scores
-        score = Math.floor(Math.random() * 4); // 0-3
-      } else {
-        // Last 70: mostly low scores
-        score = Math.floor(Math.random() * 2); // 0-1
-      }
-      demoAnswers[i] = score.toString();
-    }
-    return demoAnswers;
-  };
 
   if (!pid5Profile && !isProcessing) {
     return (
