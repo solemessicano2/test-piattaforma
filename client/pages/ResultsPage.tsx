@@ -36,6 +36,7 @@ export default function ResultsPage() {
   const [pid5Profile, setPid5Profile] = useState<PID5CompleteProfile | null>(
     null,
   );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Get data from navigation state
   const { answers, testData } = location.state || {};
