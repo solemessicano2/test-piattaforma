@@ -124,20 +124,41 @@ export default function ResultsPage() {
   const averageTScore = averageMeanScore * 50; // Approssimazione per compatibilità template
 
   const handleDownloadPDF = () => {
-    // Create a clean version for printing
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
+    try {
+      const printContent = generatePrintableHTML();
+      const printWindow = window.open("", "_blank");
 
-    const printContent = generatePrintableHTML();
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.focus();
+      if (!printWindow) {
+        toast({
+          title: "Errore",
+          description: "Impossibile aprire la finestra di stampa. Controlla le impostazioni del browser.",
+          variant: "destructive"
+        });
+        return;
+      }
 
-    // Wait for content to load then trigger print
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 250);
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+
+      // Wait for content to load then trigger print
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+
+      toast({
+        title: "PDF Generato",
+        description: "Il report PDF è stato aperto per la stampa/salvataggio"
+      });
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      toast({
+        title: "Errore PDF",
+        description: "Errore nella generazione del PDF",
+        variant: "destructive"
+      });
+    }
   };
 
   const generatePrintableHTML = () => {
