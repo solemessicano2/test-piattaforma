@@ -48,7 +48,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 
     const media = {
       mimeType: mimetype,
-      body: require("stream").Readable.from(buffer),
+      body: Readable.from(buffer),
     };
 
     const response = await drive.files.create({
