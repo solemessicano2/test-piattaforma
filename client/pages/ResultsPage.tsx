@@ -355,12 +355,33 @@ export default function ResultsPage() {
     try {
       setIsUploading(true);
 
-      // Test with simple JSON first
+      // First check environment variables
+      console.log('Checking environment variables...');
+      const envCheck = await fetch("/api/test/env-check");
+      const envData = await envCheck.json();
+      console.log('Environment check:', envData);
+
+      if (!envData.hasCredentials) {
+        throw new Error("GOOGLE_DRIVE_CREDENTIALS non configurate");
+      }
+
+      if (!envData.hasFolderId) {
+        throw new Error("GOOGLE_DRIVE_FOLDER_ID non configurato");
+      }
+
+      toast({
+        title: "Environment OK",
+        description: `Credenziali e Folder ID trovati. Testando upload...`
+      });
+
+      // Test with simple JSON
       const testData = {
         test: "connection",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        envCheck: envData
       };
 
+      console.log('Sending test upload request...');
       const response = await fetch("/api/drive/upload-json", {
         method: "POST",
         headers: {
@@ -372,24 +393,33 @@ export default function ResultsPage() {
         })
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
         const error = await response.text();
-        console.error('Drive API Error:', error);
-        throw new Error(`HTTP ${response.status}: ${error}`);
+        console.error('Drive API Error Response:', error);
+
+        try {
+          const errorJson = JSON.parse(error);
+          throw new Error(`${errorJson.error}: ${errorJson.details || 'Dettagli non disponibili'}`);
+        } catch {
+          throw new Error(`HTTP ${response.status}: ${error}`);
+        }
       }
 
       const result = await response.json();
       console.log('Drive upload success:', result);
 
       toast({
-        title: "Test Connessione Riuscito",
-        description: `File di test caricato: ${result.fileName}`,
+        title: "✅ Test Connessione Riuscito!",
+        description: `File caricato su Google Drive: ${result.fileName}`,
       });
     } catch (error) {
       console.error("Drive connection test failed:", error);
       toast({
-        title: "Errore Connessione Drive",
-        description: `Errore: ${error.message}`,
+        title: "❌ Errore Connessione Drive",
+        description: `${error.message}`,
         variant: "destructive",
       });
     } finally {
