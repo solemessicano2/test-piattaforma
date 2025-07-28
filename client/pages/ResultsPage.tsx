@@ -832,7 +832,16 @@ export default function ResultsPage() {
           </Link>
           <Button
             size="lg"
-            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600"
+            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-cyan-600"
+            onClick={handleUploadToDrive}
+            disabled={isUploading}
+          >
+            <Cloud className="w-5 h-5 mr-2" />
+            {isUploading ? "Uploading..." : "Salva su Google Drive"}
+          </Button>
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-pink-600"
             onClick={handleDownloadPDF}
           >
             <Download className="w-5 h-5 mr-2" />
@@ -843,11 +852,12 @@ export default function ResultsPage() {
             className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-emerald-600"
             onClick={handleExportToExcel}
           >
-            📊 Export Dati Excel
+            <FileSpreadsheet className="w-5 h-5 mr-2" />
+            Export Excel
           </Button>
           <Button
             size="lg"
-            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600"
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600"
             onClick={handleExportWithFormulas}
           >
             🧮 Excel con Formule
