@@ -194,7 +194,19 @@ export default function ResultsPage() {
   };
 
   const generatePrintableHTML = () => {
-    if (!pid5Profile) return "";
+    if (!pid5Profile) {
+      console.error('pid5Profile is null in generatePrintableHTML');
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head><title>PID-5 Report - Errore</title></head>
+        <body>
+          <h1>Errore nel generare il report</h1>
+          <p>I dati del profilo PID-5 non sono disponibili.</p>
+        </body>
+        </html>
+      `;
+    }
 
     const currentDate = new Date().toLocaleDateString("it-IT");
 
