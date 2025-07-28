@@ -307,71 +307,7 @@ export default function ResultsPage() {
     }
   };
 
-  const generateExcelData = () => {
-    if (!pid5Profile) return "";
 
-    const currentDate = new Date().toLocaleDateString("it-IT");
-
-    // Header information
-    let csvContent = "PID-5 - Dati Grezzi di Somministrazione\n";
-    csvContent += `Data Elaborazione,${currentDate}\n`;
-    csvContent += `Numero Item Valutati,${Object.keys(currentAnswers).length}\n`;
-    csvContent += `Severità Complessiva,${pid5Profile.overallSeverity}\n`;
-    csvContent += `Punteggio Medio Complessivo,${averageMeanScore.toFixed(2)}\n\n`;
-
-    // Domain summary
-    csvContent += "PUNTEGGI PER DOMINI (DSM-5)\n";
-    csvContent +=
-      "Dominio,Punteggio Medio,Interpretazione,Clinicamente Elevato\n";
-    pid5Profile.domainScores.forEach((domain) => {
-      csvContent += `${domain.domain},${domain.meanScore.toFixed(2)},${domain.interpretation},${domain.meanScore >= 2.0 ? "Sì" : "No"}\n`;
-    });
-    csvContent += "\n";
-
-    // Facet scores for clinically significant ones
-    csvContent += "FACCETTE ELEVATE (≥2.0)\n";
-    csvContent += "Faccetta,Punteggio Medio,Interpretazione\n";
-    pid5Profile.facetScores
-      .filter((f) => f.meanScore >= 2.0)
-      .forEach((facet) => {
-        csvContent += `${facet.facet},${facet.meanScore.toFixed(2)},${facet.interpretation}\n`;
-      });
-    csvContent += "\n";
-
-    // Individual item responses
-    csvContent += "RISPOSTE INDIVIDUALI\n";
-    csvContent +=
-      "ID Item,Domanda,Risposta (0-3),Risposta Testuale,Dominio,Faccetta\n";
-
-    currentTestData.items.forEach((item) => {
-      const answer = currentAnswers[item.id];
-      const answerText =
-        answer !== undefined
-          ? currentTestData.scaleLikert[parseInt(answer)]
-          : "Non risposto";
-      const answerValue = answer !== undefined ? answer : "";
-
-      // Escape commas and quotes in text for CSV
-      const questionText = `"${item.text.replace(/"/g, '""')}"`;
-      const answerTextEscaped = `"${answerText.replace(/"/g, '""')}"`;
-
-      csvContent += `${item.id},${questionText},${answerValue},${answerTextEscaped},${item.domain},${item.facet}\n`;
-    });
-
-    csvContent += "\n";
-    csvContent += "NOTE CLINICHE\n";
-    pid5Profile.clinicalNotes.forEach((note, index) => {
-      csvContent += `Nota ${index + 1},"${note.replace(/"/g, '""')}"\n`;
-    });
-
-    csvContent += "\n";
-    csvContent += "RACCOMANDAZIONI\n";
-    pid5Profile.recommendations.forEach((rec, index) => {
-      csvContent += `Raccomandazione ${index + 1},"${rec.replace(/"/g, '""')}"\n`;
-    });
-
-    return csvContent;
-  };
 
   const handleExportWithFormulas = () => {
     if (!pid5Profile) return;
