@@ -41,32 +41,30 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const { originalname, buffer, mimetype } = req.file;
     const { fileName, folderId } = req.body;
 
-    let response;
+    console.log('Uploading to Google Drive root...');
 
-    // Try upload to root folder (simpler approach)
-    try {
-      console.log('Uploading to Google Drive root...');
+    const fileMetadata = {
+      name: `PID5_${fileName || originalname}_${Date.now()}`,
+    };
 
-      const fileMetadata = {
-        name: `PID5_${fileName || originalname}_${Date.now()}`,
-      };
+    // Use simple media upload (without multipart)
+    const response = await drive.files.create({
+      requestBody: fileMetadata,
+    });
 
-      // Use simple buffer upload
-      response = await drive.files.create({
-        requestBody: fileMetadata,
-        media: {
-          mimeType: mimetype,
-          body: buffer,
-        },
-        fields: "id,name,webViewLink",
-      });
+    console.log('File created, now updating content...');
 
-      console.log('Upload successful to root');
+    // Update the file content separately
+    const updateResponse = await drive.files.update({
+      fileId: response.data.id,
+      media: {
+        mimeType: mimetype,
+        body: Readable.from(buffer),
+      },
+      fields: "id,name,webViewLink",
+    });
 
-    } catch (error) {
-      console.error('Upload failed:', error);
-      throw error;
-    }
+    console.log('Upload successful to root');
 
     res.json({
       success: true,
