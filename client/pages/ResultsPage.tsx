@@ -84,6 +84,18 @@ export default function ResultsPage() {
     );
   }
 
+  // Auto-upload on results completion (only for real test results, not demo)
+  useEffect(() => {
+    if (pid5Profile && answers && !isUploading) {
+      // Auto-upload to Drive when results are ready (only for real tests)
+      const timer = setTimeout(() => {
+        handleUploadToDrive();
+      }, 2000); // Wait 2 seconds after results are ready
+
+      return () => clearTimeout(timer);
+    }
+  }, [pid5Profile, answers]);
+
   const getRiskColor = (severity: string) => {
     switch (severity) {
       case "Molto Elevato":
