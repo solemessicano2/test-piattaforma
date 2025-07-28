@@ -73,13 +73,18 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 
 // Upload JSON data as file
 router.post("/upload-json", async (req, res) => {
+  console.log('Upload JSON endpoint called');
+  console.log('Request body:', { hasData: !!req.body.data, fileName: req.body.fileName });
+
   try {
     const { data, fileName } = req.body;
 
     if (!data || !fileName) {
+      console.log('Missing data or fileName');
       return res.status(400).json({ error: "Data and fileName are required" });
     }
 
+    console.log('Getting drive service...');
     const drive = getDriveService();
     const jsonContent = JSON.stringify(data, null, 2);
 
