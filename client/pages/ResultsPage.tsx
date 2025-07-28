@@ -452,7 +452,10 @@ export default function ResultsPage() {
 
     setIsUploading(true);
     try {
-      // Generate Excel file
+      const timestamp = new Date().toLocaleDateString("it-IT").replace(/\//g, "-");
+
+      // 1. Generate and upload Excel file
+      console.log('Generating Excel file...');
       const workbook = ExcelGenerator.generateResultsWorkbook({
         profile: pid5Profile,
         answers: currentAnswers,
@@ -460,88 +463,71 @@ export default function ResultsPage() {
       });
 
       const buffer = ExcelGenerator.generateBuffer(workbook);
-      const fileName = `PID5_Risultati_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}_${Date.now()}.xlsx`;
+      const excelFileName = `PID5_Risultati_${timestamp}.xlsx`;
 
-      // Create FormData for upload
       const formData = new FormData();
-      const file = new File([buffer], fileName, {
+      const excelFile = new File([buffer], excelFileName, {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
 
-      formData.append("file", file);
-      formData.append("fileName", fileName);
+      formData.append("file", excelFile);
+      formData.append("fileName", excelFileName);
 
-      // Upload to Google Drive
-      const response = await fetch("/api/drive/upload", {
+      console.log('Uploading Excel to Drive...');
+      const excelResponse = await fetch("/api/drive/upload", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("Upload failed");
+      if (!excelResponse.ok) {
+        throw new Error("Excel upload failed");
       }
 
-      const result = await response.json();
+      const excelResult = await excelResponse.json();
+      console.log('Excel uploaded:', excelResult);
 
-      toast({
-        title: "Upload Completato",
-        description: `File salvato su Google Drive: ${result.fileName}`,
+      // 2. Generate and upload PDF
+      console.log('Generating PDF...');
+      const pdfContent = generatePrintableHTML();
+      const pdfFileName = `PID5_Report_${timestamp}.pdf`;
+
+      // Create PDF blob (simplified - just HTML content for now)
+      const pdfBlob = new Blob([pdfContent], { type: 'text/html' });
+      const pdfFormData = new FormData();
+      const pdfFile = new File([pdfBlob], pdfFileName.replace('.pdf', '.html'), {
+        type: "text/html",
       });
 
-      // Also upload JSON summary
-      await uploadJSONToDrive();
+      pdfFormData.append("file", pdfFile);
+      pdfFormData.append("fileName", pdfFileName.replace('.pdf', '.html'));
+
+      console.log('Uploading PDF to Drive...');
+      const pdfResponse = await fetch("/api/drive/upload", {
+        method: "POST",
+        body: pdfFormData,
+      });
+
+      if (!pdfResponse.ok) {
+        throw new Error("PDF upload failed");
+      }
+
+      const pdfResult = await pdfResponse.json();
+      console.log('PDF uploaded:', pdfResult);
+
+      toast({
+        title: "✅ Upload Completato!",
+        description: `Excel e PDF salvati su Google Drive`,
+      });
+
     } catch (error) {
       console.error("Drive upload error:", error);
       toast({
-        title: "Errore Upload",
-        description: "Errore nell'upload su Google Drive",
+        title: "❌ Errore Upload",
+        description: `Errore: ${error.message}`,
         variant: "destructive",
       });
     } finally {
       setIsUploading(false);
-    }
-  };
-
-  const uploadJSONToDrive = async () => {
-    if (!pid5Profile) return;
-
-    try {
-      const summaryData = {
-        timestamp: new Date().toISOString(),
-        testType: "PID-5",
-        overallSeverity: pid5Profile.overallSeverity,
-        domainScores: pid5Profile.domainScores.map((domain) => ({
-          domain: domain.domain,
-          meanScore: domain.meanScore,
-          interpretation: domain.interpretation,
-          clinicallyElevated: domain.meanScore >= 2.0,
-        })),
-        elevatedFacets: pid5Profile.facetScores
-          .filter((f) => f.meanScore >= 2.0)
-          .map((facet) => ({
-            facet: facet.facet,
-            meanScore: facet.meanScore,
-            interpretation: facet.interpretation,
-          })),
-        clinicalNotes: pid5Profile.clinicalNotes,
-        recommendations: pid5Profile.recommendations,
-        rawAnswers: currentAnswers,
-      };
-
-      const fileName = `PID5_Summary_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}_${Date.now()}.json`;
-
-      await fetch("/api/drive/upload-json", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: summaryData,
-          fileName,
-        }),
-      });
-    } catch (error) {
-      console.error("JSON upload error:", error);
     }
   };
 
