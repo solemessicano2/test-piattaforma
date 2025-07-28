@@ -265,7 +265,7 @@ export default function ResultsPage() {
           .join("")}
 
         <h2>Note Cliniche</h2>
-        ${pid5Profile.clinicalNotes
+        ${(pid5Profile.clinicalNotes || [])
           .map(
             (note) => `
           <div class="clinical-note">${note}</div>
@@ -273,17 +273,8 @@ export default function ResultsPage() {
           )
           .join("")}
 
-        <h2>Considerazioni Diagnostiche</h2>
-        ${pid5Profile.diagnosticConsiderations
-          .map(
-            (consideration) => `
-          <div class="clinical-note">${consideration}</div>
-        `,
-          )
-          .join("")}
-
         <h2>Raccomandazioni</h2>
-        ${pid5Profile.recommendations
+        ${(pid5Profile.recommendations || [])
           .map(
             (rec) => `
           <div class="recommendation">${rec}</div>
