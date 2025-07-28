@@ -99,7 +99,7 @@ router.post("/upload-json", async (req, res) => {
 
     const media = {
       mimeType: "application/json",
-      body: require("stream").Readable.from(Buffer.from(jsonContent)),
+      body: Readable.from(Buffer.from(jsonContent)),
     };
 
     console.log('Uploading to Google Drive...');
