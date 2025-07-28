@@ -100,12 +100,6 @@ router.post("/upload-json", async (req, res) => {
     const drive = getDriveService();
     const jsonContent = JSON.stringify(data, null, 2);
 
-    console.log('Creating file metadata...');
-    const fileMetadata = {
-      name: fileName,
-      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
-    };
-
     console.log('Uploading JSON to Google Drive root...');
 
     const fileMetadata = {
