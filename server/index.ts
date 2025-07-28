@@ -24,5 +24,8 @@ export function createServer() {
   // Google Drive routes
   app.use("/api/drive", driveRoutes);
 
+  // Test routes
+  app.use("/api/test", testEnvRoutes);
+
   return app;
 }
