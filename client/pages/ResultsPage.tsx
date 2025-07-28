@@ -750,6 +750,23 @@ export default function ResultsPage() {
           </div>
         )}
 
+        {/* Auto-upload Banner */}
+        {answers && isUploading && (
+          <div className="mb-8">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-3">
+                <Cloud className="w-6 h-6 text-blue-600 animate-pulse" />
+                <div>
+                  <h3 className="text-blue-800 font-semibold">Upload Automatico in Corso</h3>
+                  <p className="text-blue-700 text-sm">
+                    I risultati vengono salvati automaticamente su Google Drive...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Results Header */}
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
