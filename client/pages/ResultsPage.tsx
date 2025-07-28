@@ -574,6 +574,15 @@ export default function ResultsPage() {
                 <Cloud className="w-4 h-4 mr-2" />
                 {isUploading ? "Uploading..." : "Salva su Drive"}
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={testDriveConnection}
+                disabled={isUploading}
+                className="bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100"
+              >
+                🧪 Test Drive
+              </Button>
               <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF
