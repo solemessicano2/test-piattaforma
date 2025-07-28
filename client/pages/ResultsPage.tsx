@@ -8,19 +8,22 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import {
   processOfficialPID5Results,
   type PID5OfficialProfile,
 } from "@/utils/pid5-official-scoring";
+import { ExcelGenerator } from "@/utils/excel-generator";
 import {
   ArrowLeft,
   Download,
   Share2,
-
   CheckCircle,
   BarChart3,
   AlertTriangle,
   Shield,
+  Cloud,
+  FileSpreadsheet,
 } from "lucide-react";
 
 export default function ResultsPage() {
