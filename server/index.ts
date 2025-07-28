@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import driveRoutes from "./routes/drive-upload";
+import testEnvRoutes from "./routes/test-env";
 
 export function createServer() {
   const app = express();
