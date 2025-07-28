@@ -364,22 +364,27 @@ export default function ResultsPage() {
   const handleExportWithFormulas = () => {
     if (!pid5Profile) return;
 
-    // Generate Excel data with formulas
-    const excelData = generateExcelWithFormulas();
-    const blob = new Blob([excelData], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
+    try {
+      const workbook = ExcelGenerator.generateResultsWorkbook({
+        profile: pid5Profile,
+        answers: currentAnswers,
+        includeFormulas: true
+      });
 
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `PID5_Con_Formule_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.csv`,
-      );
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const fileName = `PID5_Con_Formule_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
+      ExcelGenerator.downloadExcel(fileName, workbook);
+
+      toast({
+        title: "Excel con Formule Scaricato",
+        description: "Il file Excel con formule di calcolo è stato scaricato"
+      });
+    } catch (error) {
+      console.error('Excel with formulas export error:', error);
+      toast({
+        title: "Errore Excel",
+        description: "Errore nell'esportazione Excel con formule",
+        variant: "destructive"
+      });
     }
   };
 
