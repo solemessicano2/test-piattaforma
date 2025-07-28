@@ -68,9 +68,9 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 
     res.json({
       success: true,
-      fileId: response.data.id,
-      fileName: response.data.name,
-      webViewLink: response.data.webViewLink,
+      fileId: updateResponse.data.id,
+      fileName: updateResponse.data.name,
+      webViewLink: updateResponse.data.webViewLink,
     });
   } catch (error) {
     console.error("Error uploading to Google Drive:", error);
