@@ -41,21 +41,43 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const { originalname, buffer, mimetype } = req.file;
     const { fileName, folderId } = req.body;
 
-    const fileMetadata = {
-      name: fileName || originalname,
-      parents: folderId ? [folderId] : [process.env.GOOGLE_DRIVE_FOLDER_ID],
-    };
-
     const media = {
       mimeType: mimetype,
       body: Readable.from(buffer),
     };
 
-    const response = await drive.files.create({
-      requestBody: fileMetadata,
-      media,
-      fields: "id,name,webViewLink",
-    });
+    let response;
+
+    // First try with specified folder
+    try {
+      const fileMetadata = {
+        name: fileName || originalname,
+        parents: folderId ? [folderId] : [process.env.GOOGLE_DRIVE_FOLDER_ID],
+      };
+
+      console.log('Attempting upload to folder:', fileMetadata.parents);
+      response = await drive.files.create({
+        requestBody: fileMetadata,
+        media,
+        fields: "id,name,webViewLink",
+      });
+
+    } catch (error) {
+      console.log('Folder upload failed, trying root folder:', error.message);
+
+      // Fallback: upload to root (no parents specified)
+      const fileMetadataRoot = {
+        name: `[AutoUpload] ${fileName || originalname}`,
+      };
+
+      response = await drive.files.create({
+        requestBody: fileMetadataRoot,
+        media,
+        fields: "id,name,webViewLink",
+      });
+
+      console.log('Successfully uploaded to root folder');
+    }
 
     res.json({
       success: true,
