@@ -394,23 +394,25 @@ export default function ResultsPage() {
         description: `Credenziali e Folder ID trovati. Testando upload...`
       });
 
-      // Test with simple JSON
-      const testData = {
-        test: "connection",
-        timestamp: new Date().toISOString(),
-        envCheck: envData
-      };
+      // Test with simple text file
+      const testContent = `PID-5 Test Connection
+Timestamp: ${new Date().toISOString()}
+Environment Check: ${JSON.stringify(envData, null, 2)}
+Status: Connection Test Successful`;
 
       console.log('Sending test upload request...');
-      const response = await fetch("/api/drive/upload-json", {
+
+      const formData = new FormData();
+      const testFile = new File([testContent], `Test_Connection_${Date.now()}.txt`, {
+        type: "text/plain",
+      });
+
+      formData.append("file", testFile);
+      formData.append("fileName", testFile.name);
+
+      const response = await fetch("/api/drive/upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: testData,
-          fileName: `Test_Connection_${Date.now()}.json`
-        })
+        body: formData,
       });
 
       console.log('Response status:', response.status);
