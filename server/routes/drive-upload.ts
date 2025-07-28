@@ -7,7 +7,19 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Google Drive service
 const getDriveService = () => {
+  console.log('Getting Drive service...');
+  console.log('Environment variables:', {
+    hasCredentials: !!process.env.GOOGLE_DRIVE_CREDENTIALS,
+    hasFolderId: !!process.env.GOOGLE_DRIVE_FOLDER_ID,
+    folderId: process.env.GOOGLE_DRIVE_FOLDER_ID
+  });
+
   const credentials = JSON.parse(process.env.GOOGLE_DRIVE_CREDENTIALS || "{}");
+
+  console.log('Parsed credentials:', {
+    hasPrivateKey: !!credentials.private_key,
+    clientEmail: credentials.client_email
+  });
 
   const auth = new google.auth.GoogleAuth({
     credentials,
