@@ -693,9 +693,15 @@ export default function ResultsPage() {
             </Button>
 
             <div className="flex items-center space-x-3">
-              <Button variant="outline" size="sm">
-                <Share2 className="w-4 h-4 mr-2" />
-                Condividi
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleUploadToDrive}
+                disabled={isUploading}
+                className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+              >
+                <Cloud className="w-4 h-4 mr-2" />
+                {isUploading ? "Uploading..." : "Salva su Drive"}
               </Button>
               <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
                 <Download className="w-4 h-4 mr-2" />
@@ -707,13 +713,14 @@ export default function ResultsPage() {
                 onClick={handleExportToExcel}
                 className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
               >
-                📊 Export Excel
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                Excel
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleExportWithFormulas}
-                className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
               >
                 🧮 Excel + Formule
               </Button>
