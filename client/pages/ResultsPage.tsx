@@ -271,22 +271,27 @@ export default function ResultsPage() {
   const handleExportToExcel = () => {
     if (!pid5Profile) return;
 
-    // Generate CSV data with raw scores
-    const csvData = generateExcelData();
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
+    try {
+      const workbook = ExcelGenerator.generateResultsWorkbook({
+        profile: pid5Profile,
+        answers: currentAnswers,
+        includeFormulas: false
+      });
 
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `PID5_Dati_Grezzi_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.csv`,
-      );
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const fileName = `PID5_Risultati_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
+      ExcelGenerator.downloadExcel(fileName, workbook);
+
+      toast({
+        title: "Excel Scaricato",
+        description: "Il file Excel con i risultati è stato scaricato"
+      });
+    } catch (error) {
+      console.error('Excel export error:', error);
+      toast({
+        title: "Errore Excel",
+        description: "Errore nell'esportazione Excel",
+        variant: "destructive"
+      });
     }
   };
 
