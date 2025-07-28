@@ -104,31 +104,14 @@ export default function ResultsPage() {
     );
   }
 
-  // Auto-upload on results completion (only for real test results, not demo)
+  // Auto-upload disabled due to Google Drive service account limitations
   useEffect(() => {
-    console.log('Auto-upload effect triggered:', {
-      hasPid5Profile: !!pid5Profile,
-      hasAnswers: !!answers,
-      isUploading
-    });
-
-    if (pid5Profile && answers && !isUploading) {
-      console.log('Starting auto-upload timer...');
+    if (pid5Profile && answers) {
+      console.log('Results ready - auto-upload disabled');
       toast({
-        title: "Auto-upload programmato",
-        description: "I risultati verranno salvati automaticamente su Drive tra 2 secondi"
+        title: "Risultati Pronti! 📊",
+        description: "Usa i pulsanti per scaricare PDF ed Excel",
       });
-
-      // Auto-upload to Drive when results are ready (only for real tests)
-      const timer = setTimeout(() => {
-        console.log('Executing auto-upload...');
-        handleUploadToDrive();
-      }, 2000); // Wait 2 seconds after results are ready
-
-      return () => {
-        console.log('Cleaning up auto-upload timer');
-        clearTimeout(timer);
-      };
     }
   }, [pid5Profile, answers]);
 
