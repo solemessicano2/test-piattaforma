@@ -555,25 +555,7 @@ export default function ResultsPage() {
     );
   }
 
-  // Simple demo data
-  const demoAnswers: Record<number, string> = {};
-  if (!answers) {
-    for (let i = 1; i <= 220; i++) {
-      demoAnswers[i] = Math.floor(Math.random() * 4).toString();
-    }
-  }
 
-  const currentAnswers = answers || demoAnswers;
-  const currentTestData = testData || {
-    title: "PID-5 Demo",
-    items: Array.from({ length: 220 }, (_, i) => ({
-      id: i + 1,
-      text: `Domanda ${i + 1}`,
-      domain: "Demo",
-      facet: "Demo",
-    })),
-    scaleLikert: ["Per niente", "Poco", "Moderatamente", "Molto"],
-  };
 
   if (isProcessing) {
     return (
