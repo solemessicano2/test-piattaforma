@@ -335,6 +335,52 @@ export default function ResultsPage() {
     }
   };
 
+  const testDriveConnection = async () => {
+    try {
+      setIsUploading(true);
+
+      // Test with simple JSON first
+      const testData = {
+        test: "connection",
+        timestamp: new Date().toISOString()
+      };
+
+      const response = await fetch("/api/drive/upload-json", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: testData,
+          fileName: `Test_Connection_${Date.now()}.json`
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error('Drive API Error:', error);
+        throw new Error(`HTTP ${response.status}: ${error}`);
+      }
+
+      const result = await response.json();
+      console.log('Drive upload success:', result);
+
+      toast({
+        title: "Test Connessione Riuscito",
+        description: `File di test caricato: ${result.fileName}`,
+      });
+    } catch (error) {
+      console.error("Drive connection test failed:", error);
+      toast({
+        title: "Errore Connessione Drive",
+        description: `Errore: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleUploadToDrive = async () => {
     if (!pid5Profile) return;
 
