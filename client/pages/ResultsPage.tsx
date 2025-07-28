@@ -388,6 +388,106 @@ export default function ResultsPage() {
     }
   };
 
+  const handleUploadToDrive = async () => {
+    if (!pid5Profile) return;
+
+    setIsUploading(true);
+    try {
+      // Generate Excel file
+      const workbook = ExcelGenerator.generateResultsWorkbook({
+        profile: pid5Profile,
+        answers: currentAnswers,
+        includeFormulas: true
+      });
+
+      const buffer = ExcelGenerator.generateBuffer(workbook);
+      const fileName = `PID5_Risultati_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}_${Date.now()}.xlsx`;
+
+      // Create FormData for upload
+      const formData = new FormData();
+      const file = new File([buffer], fileName, {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      formData.append('file', file);
+      formData.append('fileName', fileName);
+
+      // Upload to Google Drive
+      const response = await fetch('/api/drive/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
+
+      toast({
+        title: "Upload Completato",
+        description: `File salvato su Google Drive: ${result.fileName}`,
+      });
+
+      // Also upload JSON summary
+      await uploadJSONToDrive();
+
+    } catch (error) {
+      console.error('Drive upload error:', error);
+      toast({
+        title: "Errore Upload",
+        description: "Errore nell'upload su Google Drive",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const uploadJSONToDrive = async () => {
+    if (!pid5Profile) return;
+
+    try {
+      const summaryData = {
+        timestamp: new Date().toISOString(),
+        testType: "PID-5",
+        overallSeverity: pid5Profile.overallSeverity,
+        domainScores: pid5Profile.domainScores.map(domain => ({
+          domain: domain.domain,
+          meanScore: domain.meanScore,
+          interpretation: domain.interpretation,
+          clinicallyElevated: domain.meanScore >= 2.0
+        })),
+        elevatedFacets: pid5Profile.facetScores
+          .filter(f => f.meanScore >= 2.0)
+          .map(facet => ({
+            facet: facet.facet,
+            meanScore: facet.meanScore,
+            interpretation: facet.interpretation
+          })),
+        clinicalNotes: pid5Profile.clinicalNotes,
+        recommendations: pid5Profile.recommendations,
+        rawAnswers: currentAnswers
+      };
+
+      const fileName = `PID5_Summary_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}_${Date.now()}.json`;
+
+      await fetch('/api/drive/upload-json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          data: summaryData,
+          fileName
+        })
+      });
+
+    } catch (error) {
+      console.error('JSON upload error:', error);
+    }
+  };
+
   const generateExcelWithFormulas = () => {
     if (!pid5Profile) return "";
 
