@@ -107,7 +107,7 @@ export default function ResultsPage() {
   // Auto-upload disabled due to Google Drive service account limitations
   useEffect(() => {
     if (pid5Profile && answers) {
-      console.log('Results ready - auto-upload disabled');
+      console.log("Results ready - auto-upload disabled");
       toast({
         title: "Risultati Pronti! 📊",
         description: "Usa i pulsanti per scaricare PDF ed Excel",
@@ -195,7 +195,7 @@ export default function ResultsPage() {
 
   const generatePrintableHTML = () => {
     if (!pid5Profile) {
-      console.error('pid5Profile is null in generatePrintableHTML');
+      console.error("pid5Profile is null in generatePrintableHTML");
       return `
         <!DOCTYPE html>
         <html>
@@ -362,10 +362,10 @@ export default function ResultsPage() {
       setIsUploading(true);
 
       // First check environment variables
-      console.log('Checking environment variables...');
+      console.log("Checking environment variables...");
       const envCheck = await fetch("/api/test/env-check");
       const envData = await envCheck.json();
-      console.log('Environment check:', envData);
+      console.log("Environment check:", envData);
 
       if (!envData.hasCredentials) {
         throw new Error("GOOGLE_DRIVE_CREDENTIALS non configurate");
@@ -377,7 +377,7 @@ export default function ResultsPage() {
 
       toast({
         title: "Environment OK",
-        description: `Credenziali e Folder ID trovati. Testando upload...`
+        description: `Credenziali e Folder ID trovati. Testando upload...`,
       });
 
       // Test with simple text file
@@ -386,12 +386,16 @@ Timestamp: ${new Date().toISOString()}
 Environment Check: ${JSON.stringify(envData, null, 2)}
 Status: Connection Test Successful`;
 
-      console.log('Sending test upload request...');
+      console.log("Sending test upload request...");
 
       const formData = new FormData();
-      const testFile = new File([testContent], `Test_Connection_${Date.now()}.txt`, {
-        type: "text/plain",
-      });
+      const testFile = new File(
+        [testContent],
+        `Test_Connection_${Date.now()}.txt`,
+        {
+          type: "text/plain",
+        },
+      );
 
       formData.append("file", testFile);
       formData.append("fileName", testFile.name);
@@ -401,23 +405,28 @@ Status: Connection Test Successful`;
         body: formData,
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log("Response status:", response.status);
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
 
       if (!response.ok) {
         const error = await response.text();
-        console.error('Drive API Error Response:', error);
+        console.error("Drive API Error Response:", error);
 
         try {
           const errorJson = JSON.parse(error);
-          throw new Error(`${errorJson.error}: ${errorJson.details || 'Dettagli non disponibili'}`);
+          throw new Error(
+            `${errorJson.error}: ${errorJson.details || "Dettagli non disponibili"}`,
+          );
         } catch {
           throw new Error(`HTTP ${response.status}: ${error}`);
         }
       }
 
       const result = await response.json();
-      console.log('Drive upload success:', result);
+      console.log("Drive upload success:", result);
 
       toast({
         title: "✅ Test Connessione Riuscito!",
@@ -440,10 +449,12 @@ Status: Connection Test Successful`;
 
     setIsUploading(true);
     try {
-      const timestamp = new Date().toLocaleDateString("it-IT").replace(/\//g, "-");
+      const timestamp = new Date()
+        .toLocaleDateString("it-IT")
+        .replace(/\//g, "-");
 
       // 1. Generate and upload Excel file
-      console.log('Generating Excel file...');
+      console.log("Generating Excel file...");
       const workbook = ExcelGenerator.generateResultsWorkbook({
         profile: pid5Profile,
         answers: currentAnswers,
@@ -461,7 +472,7 @@ Status: Connection Test Successful`;
       formData.append("file", excelFile);
       formData.append("fileName", excelFileName);
 
-      console.log('Uploading Excel to Drive...');
+      console.log("Uploading Excel to Drive...");
       const excelResponse = await fetch("/api/drive/upload", {
         method: "POST",
         body: formData,
@@ -472,24 +483,28 @@ Status: Connection Test Successful`;
       }
 
       const excelResult = await excelResponse.json();
-      console.log('Excel uploaded:', excelResult);
+      console.log("Excel uploaded:", excelResult);
 
       // 2. Generate and upload PDF
-      console.log('Generating PDF...');
+      console.log("Generating PDF...");
       const pdfContent = generatePrintableHTML();
       const pdfFileName = `PID5_Report_${timestamp}.pdf`;
 
       // Create PDF blob (simplified - just HTML content for now)
-      const pdfBlob = new Blob([pdfContent], { type: 'text/html' });
+      const pdfBlob = new Blob([pdfContent], { type: "text/html" });
       const pdfFormData = new FormData();
-      const pdfFile = new File([pdfBlob], pdfFileName.replace('.pdf', '.html'), {
-        type: "text/html",
-      });
+      const pdfFile = new File(
+        [pdfBlob],
+        pdfFileName.replace(".pdf", ".html"),
+        {
+          type: "text/html",
+        },
+      );
 
       pdfFormData.append("file", pdfFile);
-      pdfFormData.append("fileName", pdfFileName.replace('.pdf', '.html'));
+      pdfFormData.append("fileName", pdfFileName.replace(".pdf", ".html"));
 
-      console.log('Uploading PDF to Drive...');
+      console.log("Uploading PDF to Drive...");
       const pdfResponse = await fetch("/api/drive/upload", {
         method: "POST",
         body: pdfFormData,
@@ -500,13 +515,12 @@ Status: Connection Test Successful`;
       }
 
       const pdfResult = await pdfResponse.json();
-      console.log('PDF uploaded:', pdfResult);
+      console.log("PDF uploaded:", pdfResult);
 
       toast({
         title: "✅ Upload Completato!",
         description: `Excel e PDF salvati su Google Drive`,
       });
-
     } catch (error) {
       console.error("Drive upload error:", error);
       toast({
@@ -528,8 +542,6 @@ Status: Connection Test Successful`;
       />
     );
   }
-
-
 
   if (isProcessing) {
     return (
@@ -646,7 +658,8 @@ Status: Connection Test Successful`;
                     Risultati Test Completati
                   </h3>
                   <p className="text-green-700 text-sm">
-                    Usa i pulsanti qui sotto per scaricare PDF e Excel con tutti i risultati DSM-5
+                    Usa i pulsanti qui sotto per scaricare PDF e Excel con tutti
+                    i risultati DSM-5
                   </p>
                 </div>
               </div>
