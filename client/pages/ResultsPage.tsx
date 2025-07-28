@@ -234,19 +234,19 @@ export default function ResultsPage() {
         </div>
 
         <h2>Risultati per Domini</h2>
-        ${pid5Profile.domainScores
+        ${(pid5Profile.domainScores || [])
           .map(
             (domain) => `
           <div class="domain-result">
             <div class="domain-title">${domain.domain} (Punteggio: ${domain.meanScore.toFixed(2)})</div>
             <p><strong>Interpretazione:</strong> ${domain.interpretation}</p>
             ${
-              domain.facets.filter((f) => f.meanScore >= 2.0).length > 0
+              (domain.facets || []).filter((f) => f.meanScore >= 2.0).length > 0
                 ? `
               <div class="facet-list">
                 <strong>Faccette Clinicamente Elevate:</strong>
                 <ul>
-                  ${domain.facets
+                  ${(domain.facets || [])
                     .filter((f) => f.meanScore >= 2.0)
                     .map(
                       (facet) => `
