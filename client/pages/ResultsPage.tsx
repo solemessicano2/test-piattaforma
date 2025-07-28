@@ -665,19 +665,37 @@ Status: Connection Test Successful`;
           </div>
         )}
 
-        {/* Download Info Banner */}
-        {answers && (
+        {/* Auto-upload Banner */}
+        {answers && isUploading && (
+          <div className="mb-8">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-3">
+                <Cloud className="w-6 h-6 text-blue-600 animate-pulse" />
+                <div>
+                  <h3 className="text-blue-800 font-semibold">
+                    Upload Automatico in Corso
+                  </h3>
+                  <p className="text-blue-700 text-sm">
+                    I risultati vengono salvati automaticamente su Google Drive...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Banner */}
+        {answers && !isUploading && (
           <div className="mb-8">
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-center space-x-3">
-                <Download className="w-6 h-6 text-green-600" />
+                <CheckCircle className="w-6 h-6 text-green-600" />
                 <div>
                   <h3 className="text-green-800 font-semibold">
                     Risultati Test Completati
                   </h3>
                   <p className="text-green-700 text-sm">
-                    Usa i pulsanti qui sotto per scaricare PDF e Excel con tutti
-                    i risultati DSM-5
+                    Upload automatico attivo! Puoi anche scaricare PDF e Excel localmente
                   </p>
                 </div>
               </div>
