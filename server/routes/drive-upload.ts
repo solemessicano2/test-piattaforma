@@ -104,13 +104,19 @@ router.post("/upload-json", async (req, res) => {
       name: `PID5_${fileName}_${Date.now()}`,
     };
 
-    const jsonBuffer = Buffer.from(jsonContent);
-
-    const response = await drive.files.create({
+    // Create file first
+    const createResponse = await drive.files.create({
       requestBody: fileMetadata,
+    });
+
+    console.log('JSON file created, updating content...');
+
+    // Update content separately
+    const response = await drive.files.update({
+      fileId: createResponse.data.id,
       media: {
         mimeType: "application/json",
-        body: jsonBuffer,
+        body: Readable.from(Buffer.from(jsonContent)),
       },
       fields: "id,name,webViewLink",
     });
