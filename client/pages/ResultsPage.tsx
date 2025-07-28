@@ -143,8 +143,9 @@ export default function ResultsPage() {
       if (!printWindow) {
         toast({
           title: "Errore",
-          description: "Impossibile aprire la finestra di stampa. Controlla le impostazioni del browser.",
-          variant: "destructive"
+          description:
+            "Impossibile aprire la finestra di stampa. Controlla le impostazioni del browser.",
+          variant: "destructive",
         });
         return;
       }
@@ -161,14 +162,14 @@ export default function ResultsPage() {
 
       toast({
         title: "PDF Generato",
-        description: "Il report PDF è stato aperto per la stampa/salvataggio"
+        description: "Il report PDF è stato aperto per la stampa/salvataggio",
       });
     } catch (error) {
-      console.error('PDF generation error:', error);
+      console.error("PDF generation error:", error);
       toast({
         title: "Errore PDF",
         description: "Errore nella generazione del PDF",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -287,7 +288,7 @@ export default function ResultsPage() {
       const workbook = ExcelGenerator.generateResultsWorkbook({
         profile: pid5Profile,
         answers: currentAnswers,
-        includeFormulas: false
+        includeFormulas: false,
       });
 
       const fileName = `PID5_Risultati_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
@@ -295,19 +296,17 @@ export default function ResultsPage() {
 
       toast({
         title: "Excel Scaricato",
-        description: "Il file Excel con i risultati è stato scaricato"
+        description: "Il file Excel con i risultati è stato scaricato",
       });
     } catch (error) {
-      console.error('Excel export error:', error);
+      console.error("Excel export error:", error);
       toast({
         title: "Errore Excel",
         description: "Errore nell'esportazione Excel",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
-
-
 
   const handleExportWithFormulas = () => {
     if (!pid5Profile) return;
@@ -316,7 +315,7 @@ export default function ResultsPage() {
       const workbook = ExcelGenerator.generateResultsWorkbook({
         profile: pid5Profile,
         answers: currentAnswers,
-        includeFormulas: true
+        includeFormulas: true,
       });
 
       const fileName = `PID5_Con_Formule_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
@@ -324,14 +323,14 @@ export default function ResultsPage() {
 
       toast({
         title: "Excel con Formule Scaricato",
-        description: "Il file Excel con formule di calcolo è stato scaricato"
+        description: "Il file Excel con formule di calcolo è stato scaricato",
       });
     } catch (error) {
-      console.error('Excel with formulas export error:', error);
+      console.error("Excel with formulas export error:", error);
       toast({
         title: "Errore Excel",
         description: "Errore nell'esportazione Excel con formule",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -345,7 +344,7 @@ export default function ResultsPage() {
       const workbook = ExcelGenerator.generateResultsWorkbook({
         profile: pid5Profile,
         answers: currentAnswers,
-        includeFormulas: true
+        includeFormulas: true,
       });
 
       const buffer = ExcelGenerator.generateBuffer(workbook);
@@ -354,20 +353,20 @@ export default function ResultsPage() {
       // Create FormData for upload
       const formData = new FormData();
       const file = new File([buffer], fileName, {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
 
-      formData.append('file', file);
-      formData.append('fileName', fileName);
+      formData.append("file", file);
+      formData.append("fileName", fileName);
 
       // Upload to Google Drive
-      const response = await fetch('/api/drive/upload', {
-        method: 'POST',
-        body: formData
+      const response = await fetch("/api/drive/upload", {
+        method: "POST",
+        body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error("Upload failed");
       }
 
       const result = await response.json();
@@ -379,13 +378,12 @@ export default function ResultsPage() {
 
       // Also upload JSON summary
       await uploadJSONToDrive();
-
     } catch (error) {
-      console.error('Drive upload error:', error);
+      console.error("Drive upload error:", error);
       toast({
         title: "Errore Upload",
         description: "Errore nell'upload su Google Drive",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsUploading(false);
@@ -400,43 +398,40 @@ export default function ResultsPage() {
         timestamp: new Date().toISOString(),
         testType: "PID-5",
         overallSeverity: pid5Profile.overallSeverity,
-        domainScores: pid5Profile.domainScores.map(domain => ({
+        domainScores: pid5Profile.domainScores.map((domain) => ({
           domain: domain.domain,
           meanScore: domain.meanScore,
           interpretation: domain.interpretation,
-          clinicallyElevated: domain.meanScore >= 2.0
+          clinicallyElevated: domain.meanScore >= 2.0,
         })),
         elevatedFacets: pid5Profile.facetScores
-          .filter(f => f.meanScore >= 2.0)
-          .map(facet => ({
+          .filter((f) => f.meanScore >= 2.0)
+          .map((facet) => ({
             facet: facet.facet,
             meanScore: facet.meanScore,
-            interpretation: facet.interpretation
+            interpretation: facet.interpretation,
           })),
         clinicalNotes: pid5Profile.clinicalNotes,
         recommendations: pid5Profile.recommendations,
-        rawAnswers: currentAnswers
+        rawAnswers: currentAnswers,
       };
 
       const fileName = `PID5_Summary_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}_${Date.now()}.json`;
 
-      await fetch('/api/drive/upload-json', {
-        method: 'POST',
+      await fetch("/api/drive/upload-json", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           data: summaryData,
-          fileName
-        })
+          fileName,
+        }),
       });
-
     } catch (error) {
-      console.error('JSON upload error:', error);
+      console.error("JSON upload error:", error);
     }
   };
-
-
 
   // Show password protection first
   if (!isAuthenticated) {
@@ -463,9 +458,9 @@ export default function ResultsPage() {
       id: i + 1,
       text: `Domanda ${i + 1}`,
       domain: "Demo",
-      facet: "Demo"
+      facet: "Demo",
     })),
-    scaleLikert: ["Per niente", "Poco", "Moderatamente", "Molto"]
+    scaleLikert: ["Per niente", "Poco", "Moderatamente", "Molto"],
   };
 
   if (isProcessing) {
@@ -569,10 +564,12 @@ export default function ResultsPage() {
                   <span className="text-white text-sm font-bold">!</span>
                 </div>
                 <div>
-                  <h3 className="text-yellow-800 font-semibold">Risultati Demo</h3>
+                  <h3 className="text-yellow-800 font-semibold">
+                    Risultati Demo
+                  </h3>
                   <p className="text-yellow-700 text-sm">
-                    Questi sono risultati di esempio generati automaticamente. Per ottenere risultati reali,
-                    completa prima il test PID-5.
+                    Questi sono risultati di esempio generati automaticamente.
+                    Per ottenere risultati reali, completa prima il test PID-5.
                   </p>
                 </div>
               </div>
@@ -587,9 +584,12 @@ export default function ResultsPage() {
               <div className="flex items-center space-x-3">
                 <Cloud className="w-6 h-6 text-blue-600 animate-pulse" />
                 <div>
-                  <h3 className="text-blue-800 font-semibold">Upload Automatico in Corso</h3>
+                  <h3 className="text-blue-800 font-semibold">
+                    Upload Automatico in Corso
+                  </h3>
                   <p className="text-blue-700 text-sm">
-                    I risultati vengono salvati automaticamente su Google Drive...
+                    I risultati vengono salvati automaticamente su Google
+                    Drive...
                   </p>
                 </div>
               </div>
@@ -627,20 +627,21 @@ export default function ResultsPage() {
                   <h3 className="text-2xl font-bold text-gray-900">
                     Severità: {pid5Profile.overallSeverity}
                   </h3>
-                  {pid5Profile.domainScores.filter(d => d.meanScore >= 2.0).length > 0 && (
+                  {pid5Profile.domainScores.filter((d) => d.meanScore >= 2.0)
+                    .length > 0 && (
                     <div>
                       <p className="text-gray-600 mb-2">Domini Elevati:</p>
                       <div className="flex flex-wrap gap-2">
                         {pid5Profile.domainScores
-                          .filter(d => d.meanScore >= 2.0)
+                          .filter((d) => d.meanScore >= 2.0)
                           .map((domain) => (
-                          <Badge
-                            key={domain.domain}
-                            className={getDomainColor(domain.domain)}
-                          >
-                            {domain.domain}
-                          </Badge>
-                        ))}
+                            <Badge
+                              key={domain.domain}
+                              className={getDomainColor(domain.domain)}
+                            >
+                              {domain.domain}
+                            </Badge>
+                          ))}
                       </div>
                     </div>
                   )}
@@ -652,7 +653,8 @@ export default function ResultsPage() {
                   </Badge>
                 </div>
                 <div className="text-center">
-                  {pid5Profile.overallSeverity === "Basso" || pid5Profile.overallSeverity === "Molto Basso" ? (
+                  {pid5Profile.overallSeverity === "Basso" ||
+                  pid5Profile.overallSeverity === "Molto Basso" ? (
                     <Shield className="w-16 h-16 mx-auto mb-4 text-green-600" />
                   ) : (
                     <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-orange-600" />
@@ -666,9 +668,10 @@ export default function ResultsPage() {
         )}
 
         {/* Risultati Ufficiali PID-5 secondo DSM-5 */}
-        <OfficialResultsDisplay profile={pid5Profile} answers={currentAnswers} />
-
-
+        <OfficialResultsDisplay
+          profile={pid5Profile}
+          answers={currentAnswers}
+        />
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
