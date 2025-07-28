@@ -41,10 +41,11 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const { originalname, buffer, mimetype } = req.file;
     const { fileName, folderId } = req.body;
 
-    console.log('Uploading to Google Drive root...');
+    console.log('Uploading to Google Drive folder:', process.env.GOOGLE_DRIVE_FOLDER_ID);
 
     const fileMetadata = {
       name: `PID5_${fileName || originalname}_${Date.now()}`,
+      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
     };
 
     // Use simple media upload (without multipart)
