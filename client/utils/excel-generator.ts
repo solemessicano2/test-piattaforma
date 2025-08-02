@@ -75,46 +75,42 @@ export class ExcelGenerator {
 
     XLSX.utils.book_append_sheet(wb, rawWS, "DatiGrezzi");
 
-    // Sheet 3: Calcoli AUTOMATICI con formule (se richiesto)
+    // Sheet 3: Calcoli e Formule SEMPLICI (se richiesto)
     if (includeFormulas) {
-      // Creare foglio per calcoli automatici
-      const calcData = [
-        ["PID-5 CALCOLI AUTOMATICI"],
-        [""],
-        ["VALORI CORRETTI (con inversioni automatiche)"],
-        ["Item ID", "Valore Originale", "Valore Corretto", "Note"],
-      ];
-
       // Lista item da invertire
       const reversedItems = [7, 30, 35, 58, 87, 90, 96, 97, 98, 131, 142, 155, 164, 177, 210, 215];
 
-      // Creare array ordinato delle risposte
+      const calcData = [
+        ["PID-5 CALCOLI FUNZIONANTI"],
+        [""],
+        ["VALORI CORRETTI"],
+        ["Item ID", "Originale", "Corretto", "Note"],
+      ];
+
+      // Array ordinato delle risposte
       const sortedAnswers = Object.entries(answers).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
 
-      // Aggiungere i dati con formule di inversione
-      sortedAnswers.forEach(([itemId, answer], index) => {
-        const row = index + 5; // Inizia dalla riga 5
+      // Aggiungere i dati con valori già calcolati (non formule)
+      sortedAnswers.forEach(([itemId, answer]) => {
         const itemIdNum = parseInt(itemId);
+        const originalValue = parseInt(answer);
         const isReversed = reversedItems.includes(itemIdNum);
+        const correctedValue = isReversed ? 3 - originalValue : originalValue;
 
         calcData.push([
           itemIdNum,
-          parseInt(answer),
-          null, // Verrà riempito con formula
+          originalValue,
+          correctedValue,
           isReversed ? "INVERTITO" : "NORMALE"
         ]);
       });
 
-      // Aggiungere sezione faccette
-      const facetStartRow = sortedAnswers.length + 8;
-      calcData.push(
-        [""],
-        ["CALCOLO FACCETTE PRINCIPALI"],
-        ["Faccetta", "Punteggio Medio", "Interpretazione"]
-      );
+      // Aggiungere spazio
+      calcData.push([""], ["CALCOLO FACCETTE"]);
+      calcData.push(["Faccetta", "Punteggio", "Items utilizzati"]);
 
-      // Definire faccette con items
-      const facets = [
+      // Definire faccette principali
+      const facetDefinitions = [
         { name: "Anedonia", items: [2, 24, 27, 31, 125, 156, 158, 190] },
         { name: "Ansia", items: [80, 94, 96, 97, 110, 111, 131, 142, 175] },
         { name: "Labilità Emotiva", items: [7, 30, 149, 152, 166, 167, 169, 172] },
@@ -122,102 +118,67 @@ export class ExcelGenerator {
         { name: "Manipolazione", items: [19, 35, 44, 64, 87, 115, 137] }
       ];
 
-      // Aggiungere righe faccette
-      facets.forEach(facet => {
+      // Calcolare e aggiungere i punteggi delle faccette (valori calcolati, non formule)
+      facetDefinitions.forEach(facet => {
+        const itemValues = facet.items.map(itemId => {
+          const answerEntry = sortedAnswers.find(([id]) => parseInt(id) === itemId);
+          if (answerEntry) {
+            const originalValue = parseInt(answerEntry[1]);
+            return reversedItems.includes(itemId) ? 3 - originalValue : originalValue;
+          }
+          return null;
+        }).filter(v => v !== null);
+
+        const meanScore = itemValues.length > 0 ?
+          itemValues.reduce((sum, val) => sum + val, 0) / itemValues.length : 0;
+
         calcData.push([
           facet.name,
-          null, // Verrà riempito con formula
-          ""
+          meanScore.toFixed(2),
+          facet.items.join(", ")
         ]);
       });
 
-      // Creare il worksheet
-      const calcWS = XLSX.utils.aoa_to_sheet(calcData);
+      // Aggiungere sezione domini
+      calcData.push([""], ["DOMINI DSM-5"]);
+      calcData.push(["Dominio", "Punteggio", "Clinicamente Elevato"]);
 
-      // AGGIUNGERE FORMULE REALI
+      // Calcolare domini usando i punteggi delle faccette già calcolati
+      const domainDefinitions = [
+        { name: "Affettività Negativa", facets: ["Anedonia", "Ansia", "Labilità Emotiva"] },
+        { name: "Distacco", facets: ["Anedonia", "Ritiro", "Evitamento"] },
+        { name: "Antagonismo", facets: ["Manipolazione", "Inganno", "Grandiosità"] },
+        { name: "Disinibizione", facets: ["Impulsività", "Irresponsabilità", "Distraibilità"] },
+        { name: "Psicoticismo", facets: ["Convinzioni", "Eccentricità", "Disregolazione"] }
+      ];
 
-      // 1. Formule per valori corretti (colonna C)
-      sortedAnswers.forEach(([itemId, answer], index) => {
-        const row = index + 5;
-        const itemIdNum = parseInt(itemId);
-        const isReversed = reversedItems.includes(itemIdNum);
-
-        if (isReversed) {
-          // Formula inversione: =3-B5
-          calcWS[`C${row}`] = { f: `3-B${row}` };
-        } else {
-          // Formula copia: =B5
-          calcWS[`C${row}`] = { f: `B${row}` };
-        }
+      // Per semplicità, usare i punteggi calcolati dal profilo esistente
+      profile.domainScores.forEach(domain => {
+        calcData.push([
+          domain.domain,
+          domain.meanScore.toFixed(2),
+          domain.meanScore >= 2.0 ? "SÌ" : "NO"
+        ]);
       });
 
-      // 2. Formule per faccette
-      facets.forEach((facet, facetIndex) => {
-        const row = facetStartRow + 3 + facetIndex;
-
-        // Trovare le righe per gli item della faccetta
-        const itemCells = facet.items.map(itemId => {
-          const answerIndex = sortedAnswers.findIndex(([id]) => parseInt(id) === itemId);
-          if (answerIndex >= 0) {
-            return `C${answerIndex + 5}`;
-          }
-          return null;
-        }).filter(Boolean);
-
-        if (itemCells.length > 0) {
-          // Formula MEDIA reale: =MEDIA(C5;C12;C25)
-          calcWS[`B${row}`] = { f: `MEDIA(${itemCells.join(";")})` };
-        }
-      });
-
-      // 3. Sezione domini
-      const domainStartRow = facetStartRow + facets.length + 6;
-
-      // Aggiungere dati domini
-      const domainData = [
+      // Aggiungere istruzioni
+      calcData.push(
         [""],
-        ["CALCOLO DOMINI DSM-5"],
-        ["Dominio", "Punteggio", "Clinicamente Elevato?"],
-        ["Affettività Negativa", null, null],
-        ["Distacco", null, null],
-        ["Antagonismo", null, null],
-        ["Disinibizione", null, null],
-        ["Psicoticismo", null, null]
-      ];
+        ["ISTRUZIONI PER CALCOLO MANUALE"],
+        ["1. Gli item da invertire sono: " + reversedItems.join(", ")],
+        ["2. Formula inversione: 3 - valore_originale"],
+        ["3. Calcolo faccetta: media degli item corretti"],
+        ["4. Calcolo dominio: media di 3 faccette principali"],
+        ["5. Soglia clinica: punteggio ≥ 2.0"]
+      );
 
-      // Aggiungere domini al foglio
-      domainData.forEach((row, i) => {
-        const excelRow = domainStartRow + i;
-        row.forEach((cell, j) => {
-          const excelCol = String.fromCharCode(65 + j);
-          if (cell !== null) {
-            calcWS[`${excelCol}${excelRow}`] = { v: cell };
-          }
-        });
-      });
-
-      // Formule per domini (esempio con Affettività Negativa)
-      const domainFormulas = [
-        `MEDIA(B${facetStartRow + 3};B${facetStartRow + 4};B${facetStartRow + 5})`, // Anedonia + Ansia + Labilità
-        `MEDIA(B${facetStartRow + 3};B${facetStartRow + 4};B${facetStartRow + 5})`, // Esempio semplificato
-        `MEDIA(B${facetStartRow + 6};B${facetStartRow + 7};B${facetStartRow + 4})`, // Manipolazione + altro
-        `MEDIA(B${facetStartRow + 5};B${facetStartRow + 6};B${facetStartRow + 4})`, // Impulsività + altro
-        `MEDIA(B${facetStartRow + 3};B${facetStartRow + 4};B${facetStartRow + 5})`  // Esempio
-      ];
-
-      domainFormulas.forEach((formula, i) => {
-        const row = domainStartRow + 3 + i;
-        calcWS[`B${row}`] = { f: formula };
-        // Formula per soglia clinica: =SE(B>2;"SÌ";"NO")
-        calcWS[`C${row}`] = { f: `SE(B${row}>=2;"SÌ";"NO")` };
-      });
+      const calcWS = XLSX.utils.aoa_to_sheet(calcData);
 
       // Impostare larghezze colonne
       calcWS["!cols"] = [
-        { wch: 20 }, // Item ID / Nome
-        { wch: 15 }, // Valore
-        { wch: 15 }, // Valore Corretto / Clinicamente Elevato
-        { wch: 20 }, // Note / Interpretazione
+        { wch: 25 }, // Nome/ID
+        { wch: 12 }, // Punteggio
+        { wch: 40 }, // Items/Note
       ];
 
       XLSX.utils.book_append_sheet(wb, calcWS, "Calcoli");
