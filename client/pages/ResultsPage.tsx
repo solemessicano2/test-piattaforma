@@ -113,11 +113,11 @@ export default function ResultsPage() {
         description: "I risultati verranno salvati automaticamente su Google Drive"
       });
 
-      // Auto-upload to Drive when results are ready (only for real tests)
-      const timer = setTimeout(() => {
-        console.log("Executing auto-upload to Drive...");
-        handleUploadToDrive();
-      }, 2000);
+      // Auto-upload disabled due to authentication issues
+      // const timer = setTimeout(() => {
+      //   console.log("Executing auto-upload to Drive...");
+      //   handleUploadToDrive();
+      // }, 2000);
 
       return () => clearTimeout(timer);
     }
