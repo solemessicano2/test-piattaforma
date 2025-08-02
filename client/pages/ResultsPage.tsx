@@ -487,7 +487,8 @@ Status: Connection Test Successful`;
       });
 
       if (!excelResponse.ok) {
-        throw new Error("Excel upload failed");
+        const errorText = await excelResponse.text();
+        throw new Error(`Excel upload failed: ${errorText}`);
       }
 
       const excelResult = await excelResponse.json();
