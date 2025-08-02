@@ -75,140 +75,136 @@ export class ExcelGenerator {
 
     XLSX.utils.book_append_sheet(wb, rawWS, "Dati Grezzi");
 
-    // Sheet 3: Calcoli con Formule (se richiesto)
+    // Sheet 3: Calcoli con Formule FUNZIONANTI (se richiesto)
     if (includeFormulas) {
-      // Creare prima il sheet dei dati con formule
       const calcData = [
-        ["PID-5 CALCOLO AUTOMATICO CON FORMULE"],
+        ["PID-5 CALCOLO AUTOMATICO CON FORMULE EXCEL"],
         [""],
-        ["RISPOSTE CORRETTE (con inversioni)"],
-        ["Item", "Risposta Grezza", "Risposta Corretta", "Descrizione"],
+        ["FACCETTE CON FORMULE FUNZIONANTI"],
+        ["Faccetta", "Punteggio", "Formula utilizzata", "Items coinvolti"],
       ];
 
-      // Aggiungere tutte le risposte con formule di inversione
-      const reversedItems = [7, 30, 35, 58, 87, 90, 96, 97, 98, 131, 142, 155, 164, 177, 210, 215];
-      const sortedAnswers = Object.entries(answers).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+      // Definire le faccette con i loro item (inclusi quelli da invertire)
+      const facetDefinitions = [
+        { name: "Anedonia", items: [2, 24, 27, 31, 125, 156, 158, 190] },
+        { name: "Ansia", items: [80, 94, 96, 97, 110, 111, 131, 142, 175] },
+        { name: "Labilità Emotiva", items: [7, 30, 149, 152, 166, 167, 169, 172] },
+        { name: "Angoscia di Separazione", items: [98, 103, 113, 120, 146, 162, 180, 194] },
+        { name: "Ritiro", items: [8, 33, 70, 116, 121, 168, 181, 218] },
+        { name: "Evitamento dell'Intimità", items: [6, 53, 76, 122, 145, 155, 198, 213] },
+        { name: "Manipolatorietà", items: [19, 35, 44, 64, 87, 115, 137] },
+        { name: "Inganno", items: [60, 90, 109, 128, 153, 179, 199] },
+        { name: "Grandiosità", items: [29, 39, 66, 84, 134, 171, 197] },
+        { name: "Irresponsabilità", items: [3, 28, 46, 65, 104, 119, 177] },
+        { name: "Impulsività", items: [5, 17, 18, 23, 59, 205] },
+        { name: "Distraibilità", items: [9, 45, 67, 85, 126, 178, 220] },
+      ];
 
-      sortedAnswers.forEach(([itemId, answer], index) => {
+      const reversedItems = [7, 30, 35, 58, 87, 90, 96, 97, 98, 131, 142, 155, 164, 177, 210, 215];
+
+      // Per ogni faccetta, creare una riga con la formula MEDIA() funzionante
+      facetDefinitions.forEach((facet, index) => {
         const row = index + 5; // Inizia dalla riga 5
-        const isReversed = reversedItems.includes(parseInt(itemId));
+
+        // Costruire la formula che pesca dal foglio "Dati Grezzi"
+        const formulaParts = facet.items.map(itemId => {
+          // Trovare la riga dell'item nel foglio "Dati Grezzi"
+          // Il foglio "Dati Grezzi" ha header nelle righe 1-2, dati dalla riga 3
+          const itemRow = Object.keys(answers).indexOf(itemId.toString()) + 3;
+
+          if (reversedItems.includes(itemId)) {
+            // Se l'item deve essere invertito: 3 - valore
+            return `(3-'Dati Grezzi'.B${itemRow})`;
+          } else {
+            // Item normale
+            return `'Dati Grezzi'.B${itemRow}`;
+          }
+        }).join(";");
+
+        const formula = `MEDIA(${formulaParts})`;
+        const itemsList = facet.items.join(", ");
 
         calcData.push([
-          parseInt(itemId),
-          parseInt(answer),
-          isReversed ? null : parseInt(answer), // Sarà sostituita con formula se invertita
-          isReversed ? "ITEM INVERTITO" : "ITEM NORMALE"
+          facet.name,
+          null, // Sarà riempito con la formula
+          formula,
+          itemsList
         ]);
       });
 
       const calcWS = XLSX.utils.aoa_to_sheet(calcData);
 
-      // Aggiungere formule di inversione per gli item invertiti
-      sortedAnswers.forEach(([itemId, answer], index) => {
-        const row = index + 5; // Inizia dalla riga 5
-        const isReversed = reversedItems.includes(parseInt(itemId));
+      // Aggiungere le formule effettive alle celle
+      facetDefinitions.forEach((facet, index) => {
+        const row = index + 5;
 
-        if (isReversed) {
-          // Formula di inversione: 3 - valore originale
-          calcWS[`C${row}`] = { f: `3-B${row}` };
+        // Costruire la formula che pesca dal foglio "Dati Grezzi"
+        const formulaParts = facet.items.map(itemId => {
+          // Trovare la riga dell'item nel foglio "Dati Grezzi"
+          const itemRow = Object.keys(answers).indexOf(itemId.toString()) + 3;
+
+          if (reversedItems.includes(itemId)) {
+            // Se l'item deve essere invertito: 3 - valore
+            return `(3-'Dati Grezzi'.B${itemRow})`;
+          } else {
+            // Item normale
+            return `'Dati Grezzi'.B${itemRow}`;
+          }
+        }).filter(part => part.includes('B')); // Solo celle valide
+
+        if (formulaParts.length > 0) {
+          const formula = `MEDIA(${formulaParts.join(";")})`;
+          calcWS[`B${row}`] = { f: formula };
         }
       });
 
-      // Aggiungere sezione calcolo faccette
-      const facetsStartRow = sortedAnswers.length + 8;
-      const facetData = [
+      // Aggiungere sezione domini
+      const domainStartRow = facetDefinitions.length + 8;
+      const domainData = [
         [""],
-        ["CALCOLO FACCETTE"],
-        ["Faccetta", "Punteggio Medio", "Items"],
-        // Esempi di calcolo per le principali faccette
-        ["Anedonia", null, "Items: 2,24,27,31,125,156,158,190"],
-        ["Ansia", null, "Items: 80,94,96,97,110,111,131,142,175"],
-        ["Labilità Emotiva", null, "Items: 7,30,149,152,166,167,169,172"],
-        ["Impulsività", null, "Items: 5,17,18,23,59,205"],
-        ["Manipolazione", null, "Items: 19,35,44,64,87,115,137"],
-        ["Inganno", null, "Items: 60,90,109,128,153,179,199"],
+        ["DOMINI DSM-5 CON FORMULE"],
+        ["Dominio", "Punteggio", "Formula", "Faccette coinvolte"],
+        ["Affettività Negativa", null, "=MEDIA(B5;B6;B8)", "Anedonia + Ansia + Labilità"],
+        ["Distacco", null, "=MEDIA(B5;B9;B10)", "Anedonia + Ritiro + Evitamento"],
+        ["Antagonismo", null, "=MEDIA(B11;B12;B13)", "Manipolazione + Inganno + Grandiosità"],
+        ["Disinibizione", null, "=MEDIA(B14;B15;B16)", "Irresponsabilità + Impulsività + Distraibilità"],
+        ["Psicoticismo", null, "=MEDIA(B17;B18;B19)", "Convinzioni + Eccentricità + Disregolazione"],
       ];
 
-      // Aggiungere i dati delle faccette al calcWS
-      facetData.forEach((row, i) => {
-        const excelRow = facetsStartRow + i;
+      // Aggiungere i domini al foglio
+      domainData.forEach((row, i) => {
+        const excelRow = domainStartRow + i;
         row.forEach((cell, j) => {
-          const excelCol = String.fromCharCode(65 + j); // A, B, C, etc.
+          const excelCol = String.fromCharCode(65 + j);
           if (cell !== null) {
             calcWS[`${excelCol}${excelRow}`] = { v: cell };
           }
         });
       });
 
-      // Aggiungere formule effettive per il calcolo delle faccette
-      // Anedonia (esempio con formula reale)
-      const anhedoniaItems = [2, 24, 27, 31, 125, 156, 158, 190];
-      const anhedoniaFormula = anhedoniaItems.map(item => {
-        const itemRow = sortedAnswers.findIndex(([id]) => parseInt(id) === item) + 5;
-        return `C${itemRow}`;
-      }).join(";");
-      calcWS[`B${facetsStartRow + 3}`] = { f: `AVERAGE(${anhedoniaFormula})` };
+      // Aggiungere le formule dei domini
+      const domainFormulas = [
+        `MEDIA(B5;B6;B8)`,   // Affettività Negativa
+        `MEDIA(B5;B9;B10)`,  // Distacco
+        `MEDIA(B11;B12;B13)`, // Antagonismo
+        `MEDIA(B14;B15;B16)`, // Disinibizione
+        `MEDIA(B17;B18;B19)`  // Psicoticismo (riferimenti da aggiustare)
+      ];
 
-      // Ansia
-      const anxietyItems = [80, 94, 96, 97, 110, 111, 131, 142, 175];
-      const anxietyFormula = anxietyItems.map(item => {
-        const itemRow = sortedAnswers.findIndex(([id]) => parseInt(id) === item) + 5;
-        return itemRow > 4 ? `C${itemRow}` : null;
-      }).filter(Boolean).join(";");
-      if (anxietyFormula) {
-        calcWS[`B${facetsStartRow + 4}`] = { f: `AVERAGE(${anxietyFormula})` };
-      }
+      domainFormulas.forEach((formula, i) => {
+        const row = domainStartRow + 3 + i;
+        calcWS[`B${row}`] = { f: formula };
+      });
 
       // Impostare larghezze colonne
       calcWS["!cols"] = [
-        { wch: 12 }, // Colonna A - Item
-        { wch: 15 }, // Colonna B - Risposta Grezza
-        { wch: 15 }, // Colonna C - Risposta Corretta
-        { wch: 25 }, // Colonna D - Descrizione
+        { wch: 25 }, // Colonna A - Nome
+        { wch: 15 }, // Colonna B - Punteggio
+        { wch: 40 }, // Colonna C - Formula
+        { wch: 30 }, // Colonna D - Items
       ];
 
-      XLSX.utils.book_append_sheet(wb, calcWS, "Calcoli Formule");
-
-      // Sheet separato con istruzioni dettagliate
-      const instructData = [
-        ["ISTRUZIONI PER CALCOLO PID-5"],
-        [""],
-        ["ITEM DA INVERTIRE (Formula: 3 - valore_originale)"],
-        ["Item ID", "Descrizione", "Formula Excel"],
-        [7, "Tensione emotiva", "=3-[cella_valore_originale]"],
-        [30, "Preoccupazione", "=3-[cella_valore_originale]"],
-        [35, "Manipolazione", "=3-[cella_valore_originale]"],
-        [58, "Rigidità", "=3-[cella_valore_originale]"],
-        [87, "Inganno", "=3-[cella_valore_originale]"],
-        [90, "Disonestà", "=3-[cella_valore_originale]"],
-        [96, "Paura", "=3-[cella_valore_originale]"],
-        [97, "Ansia", "=3-[cella_valore_originale]"],
-        [98, "Separazione", "=3-[cella_valore_originale]"],
-        [131, "Ansia sociale", "=3-[cella_valore_originale]"],
-        [142, "Nervosismo", "=3-[cella_valore_originale]"],
-        [155, "Evitamento", "=3-[cella_valore_originale]"],
-        [164, "Routine", "=3-[cella_valore_originale]"],
-        [177, "Rispetto regole", "=3-[cella_valore_originale]"],
-        [210, "Conformità", "=3-[cella_valore_originale]"],
-        [215, "Metodicità", "=3-[cella_valore_originale]"],
-        [""],
-        ["CALCOLO DOMINI DSM-5"],
-        ["Dominio", "Faccette Componenti", "Formula Excel"],
-        ["Affettività Negativa", "Labilità + Ansia + Separazione", "=AVERAGE(facet1;facet2;facet3)"],
-        ["Distacco", "Ritiro + Anedonia + Evitamento", "=AVERAGE(facet1;facet2;facet3)"],
-        ["Antagonismo", "Manipolazione + Inganno + Grandiosità", "=AVERAGE(facet1;facet2;facet3)"],
-        ["Disinibizione", "Irresponsabilità + Impulsività + Distraibilità", "=AVERAGE(facet1;facet2;facet3)"],
-        ["Psicoticismo", "Convinzioni + Eccentricità + Disregolazione", "=AVERAGE(facet1;facet2;facet3)"],
-        [""],
-        ["SOGLIE CLINICHE"],
-        ["- Punteggio medio faccetta ≥ 2.0 = Clinicamente elevato"],
-        ["- Punteggio medio dominio ≥ 2.0 = Clinicamente significativo"],
-      ];
-
-      const instructWS = XLSX.utils.aoa_to_sheet(instructData);
-      instructWS["!cols"] = [{ wch: 15 }, { wch: 35 }, { wch: 40 }];
-
-      XLSX.utils.book_append_sheet(wb, instructWS, "Istruzioni Calcolo");
+      XLSX.utils.book_append_sheet(wb, calcWS, "Calcoli Automatici");
     }
 
     // Sheet 4: Note Cliniche
