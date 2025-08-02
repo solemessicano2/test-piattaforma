@@ -520,7 +520,8 @@ Status: Connection Test Successful`;
       });
 
       if (!pdfResponse.ok) {
-        throw new Error("PDF upload failed");
+        const errorText = await pdfResponse.text();
+        throw new Error(`PDF upload failed: ${errorText}`);
       }
 
       const pdfResult = await pdfResponse.json();
