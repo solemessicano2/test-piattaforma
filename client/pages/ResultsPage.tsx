@@ -36,7 +36,6 @@ export default function ResultsPage() {
     null,
   );
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
 
   // Get data from navigation state
   const { answers, testData } = location.state || {};
