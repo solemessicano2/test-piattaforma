@@ -113,17 +113,17 @@ export class ExcelGenerator {
       facetDefinitions.forEach((facet, index) => {
         const row = index + 5; // Inizia dalla riga 5
 
-        // Costruire la formula che pesca dal foglio "Dati Grezzi"
+        // Costruire la formula che pesca dal foglio "DatiGrezzi"
         const formulaParts = facet.items.map(itemId => {
           const itemRow = itemToRowMap.get(itemId);
           if (!itemRow) return null; // Item non trovato
 
           if (reversedItems.includes(itemId)) {
             // Se l'item deve essere invertito: 3 - valore
-            return `(3-'Dati Grezzi'.B${itemRow})`;
+            return `(3-DatiGrezzi.B${itemRow})`;
           } else {
             // Item normale
-            return `'Dati Grezzi'.B${itemRow}`;
+            return `DatiGrezzi.B${itemRow}`;
           }
         }).filter(Boolean); // Rimuove null
 
