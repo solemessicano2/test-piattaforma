@@ -103,24 +103,7 @@ export default function ResultsPage() {
     );
   }
 
-  // Auto-upload to Google Drive (requires shared folder access)
-  useEffect(() => {
-    if (pid5Profile && answers && !isUploading) {
-      console.log("Results ready - starting auto-upload to Google Drive");
-      toast({
-        title: "Auto-upload attivato 🔄",
-        description: "I risultati verranno salvati automaticamente su Google Drive"
-      });
 
-      // Auto-upload disabled due to authentication issues
-      // const timer = setTimeout(() => {
-      //   console.log("Executing auto-upload to Drive...");
-      //   handleUploadToDrive();
-      // }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [pid5Profile, answers]);
 
   const getRiskColor = (severity: string) => {
     switch (severity) {
