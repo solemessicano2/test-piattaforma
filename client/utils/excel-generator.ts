@@ -102,15 +102,21 @@ export class ExcelGenerator {
 
       const reversedItems = [7, 30, 35, 58, 87, 90, 96, 97, 98, 131, 142, 155, 164, 177, 210, 215];
 
+      // Creare un mapping degli item alle righe nel foglio "Dati Grezzi"
+      const sortedAnswers = Object.entries(answers).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+      const itemToRowMap = new Map();
+      sortedAnswers.forEach(([itemId, answer], index) => {
+        itemToRowMap.set(parseInt(itemId), index + 3); // Riga 3+ nei "Dati Grezzi"
+      });
+
       // Per ogni faccetta, creare una riga con la formula MEDIA() funzionante
       facetDefinitions.forEach((facet, index) => {
         const row = index + 5; // Inizia dalla riga 5
 
         // Costruire la formula che pesca dal foglio "Dati Grezzi"
         const formulaParts = facet.items.map(itemId => {
-          // Trovare la riga dell'item nel foglio "Dati Grezzi"
-          // Il foglio "Dati Grezzi" ha header nelle righe 1-2, dati dalla riga 3
-          const itemRow = Object.keys(answers).indexOf(itemId.toString()) + 3;
+          const itemRow = itemToRowMap.get(itemId);
+          if (!itemRow) return null; // Item non trovato
 
           if (reversedItems.includes(itemId)) {
             // Se l'item deve essere invertito: 3 - valore
@@ -119,9 +125,9 @@ export class ExcelGenerator {
             // Item normale
             return `'Dati Grezzi'.B${itemRow}`;
           }
-        }).join(";");
+        }).filter(Boolean); // Rimuove null
 
-        const formula = `MEDIA(${formulaParts})`;
+        const formula = formulaParts.length > 0 ? `MEDIA(${formulaParts.join(";")})` : "N/D";
         const itemsList = facet.items.join(", ");
 
         calcData.push([
