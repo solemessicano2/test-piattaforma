@@ -75,108 +75,65 @@ export class ExcelGenerator {
 
     XLSX.utils.book_append_sheet(wb, rawWS, "DatiGrezzi");
 
-    // Sheet 3: FORMULE CORRETTE (se richiesto)
+    // Sheet 3: Calcoli e Formule (se richiesto)
     if (includeFormulas) {
-      // Prima riorganizzare i dati in ordine sequenziale per le formule
       const formulaData = [
-        ["PID-5 FORMULE CORRETTE E FUNZIONANTI"],
+        ["PID-5 CALCOLI E FORMULE DI RIFERIMENTO"],
         [""],
-        ["DATI PER FORMULE (ordinati per ID)"],
-        ["Riga", "ID Item", "Risposta", "Invertito?", "Valore Corretto"],
-      ];
-
-      // Ordinare gli item per ID e creare riferimenti fissi
-      const sortedItems = Object.entries(answers).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
-      const reversedItems = [7, 30, 35, 58, 87, 90, 96, 97, 98, 131, 142, 155, 164, 177, 210, 215];
-
-      // Creare i dati con formule per inversione
-      sortedItems.forEach(([itemId, answer], index) => {
-        const row = index + 5; // Righe 5+
-        const isReversed = reversedItems.includes(parseInt(itemId));
-
-        formulaData.push([
-          row,
-          parseInt(itemId),
-          parseInt(answer),
-          isReversed ? "SÌ" : "NO",
-          null // Sarà riempito con formula
-        ]);
-      });
-
-      // Separatore per calcoli faccette
-      formulaData.push(
+        ["ITEM DA INVERTIRE"],
+        ["Item ID", "Formula", "Descrizione"],
+        [7, "=3-[valore]", "Tensione emotiva"],
+        [30, "=3-[valore]", "Preoccupazione"],
+        [35, "=3-[valore]", "Manipolazione"],
+        [58, "=3-[valore]", "Rigidità"],
+        [87, "=3-[valore]", "Inganno"],
+        [90, "=3-[valore]", "Disonestà"],
+        [96, "=3-[valore]", "Paura"],
+        [97, "=3-[valore]", "Ansia"],
+        [98, "=3-[valore]", "Separazione"],
+        [131, "=3-[valore]", "Ansia sociale"],
+        [142, "=3-[valore]", "Nervosismo"],
+        [155, "=3-[valore]", "Evitamento"],
+        [164, "=3-[valore]", "Routine"],
+        [177, "=3-[valore]", "Rispetto regole"],
+        [210, "=3-[valore]", "Conformità"],
+        [215, "=3-[valore]", "Metodicità"],
         [""],
-        ["CALCOLO FACCETTE"],
-        ["Faccetta", "Punteggio", "Items utilizzati"]
-      );
-
-      // Definire faccette principali con items specifici
-      const mainFacets = [
-        { name: "Anedonia", items: [2, 24, 27, 31, 125, 156, 158, 190] },
-        { name: "Ansia", items: [80, 94, 96, 97, 110, 111, 131, 142, 175] },
-        { name: "Labilità Emotiva", items: [7, 30, 149, 152, 166, 167, 169, 172] },
-        { name: "Impulsività", items: [5, 17, 18, 23, 59, 205] },
-        { name: "Manipolazione", items: [19, 35, 44, 64, 87, 115, 137] }
+        ["FACCETTE PRINCIPALI (calcolo manuale)"],
+        ["Faccetta", "Items", "Calcolo suggerito"],
+        ["Anedonia", "2,24,27,31,125,156,158,190", "=MEDIA dei valori corretti"],
+        ["Ansia", "80,94,96,97,110,111,131,142,175", "=MEDIA dei valori corretti"],
+        ["Labilità Emotiva", "7,30,149,152,166,167,169,172", "=MEDIA dei valori corretti"],
+        ["Impulsività", "5,17,18,23,59,205", "=MEDIA dei valori corretti"],
+        ["Manipolazione", "19,35,44,64,87,115,137", "=MEDIA dei valori corretti"],
+        ["Inganno", "60,90,109,128,153,179,199", "=MEDIA dei valori corretti"],
+        [""],
+        ["DOMINI DSM-5"],
+        ["Dominio", "Composizione", "Soglia Clinica"],
+        ["Affettività Negativa", "Media di 3 faccette principali", "≥ 2.0"],
+        ["Distacco", "Media di 3 faccette principali", "≥ 2.0"],
+        ["Antagonismo", "Media di 3 faccette principali", "≥ 2.0"],
+        ["Disinibizione", "Media di 3 faccette principali", "≥ 2.0"],
+        ["Psicoticismo", "Media di 3 faccette principali", "≥ 2.0"],
+        [""],
+        ["ISTRUZIONI"],
+        ["1. Usa i valori dal foglio 'DatiGrezzi'"],
+        ["2. Applica le inversioni agli item indicati sopra"],
+        ["3. Calcola la media per ogni faccetta"],
+        ["4. Calcola la media di 3 faccette per ogni dominio"],
+        ["5. Punteggi ≥ 2.0 sono clinicamente significativi"],
       ];
-
-      // Aggiungere le faccette alla tabella
-      mainFacets.forEach(facet => {
-        formulaData.push([
-          facet.name,
-          null, // Punteggio da calcolare con formula
-          facet.items.join(", ")
-        ]);
-      });
 
       const formulaWS = XLSX.utils.aoa_to_sheet(formulaData);
 
-      // Aggiungere formule per inversione (colonna E)
-      sortedItems.forEach(([itemId, answer], index) => {
-        const row = index + 5;
-        const isReversed = reversedItems.includes(parseInt(itemId));
-
-        if (isReversed) {
-          // Formula per inversione: 3 - valore originale
-          formulaWS[`E${row}`] = { f: `3-C${row}` };
-        } else {
-          // Formula per copiare il valore: = valore originale
-          formulaWS[`E${row}`] = { f: `C${row}` };
-        }
-      });
-
-      // Calcolare la riga di inizio per le faccette
-      const facetStartRow = sortedItems.length + 9;
-
-      // Aggiungere formule per le faccette
-      mainFacets.forEach((facet, index) => {
-        const row = facetStartRow + index;
-
-        // Trovare le righe corrispondenti agli item della faccetta
-        const cellRefs = facet.items.map(itemId => {
-          const itemIndex = sortedItems.findIndex(([id]) => parseInt(id) === itemId);
-          if (itemIndex >= 0) {
-            return `E${itemIndex + 5}`; // Punta alla colonna E (valore corretto)
-          }
-          return null;
-        }).filter(Boolean);
-
-        if (cellRefs.length > 0) {
-          // Formula MEDIA con riferimenti diretti alle celle
-          const formula = `MEDIA(${cellRefs.join(";")})`;
-          formulaWS[`B${row}`] = { f: formula };
-        }
-      });
-
       // Impostare larghezze colonne
       formulaWS["!cols"] = [
-        { wch: 8 },  // Riga
-        { wch: 12 }, // ID Item
-        { wch: 12 }, // Risposta
-        { wch: 12 }, // Invertito?
-        { wch: 15 }, // Valore Corretto
+        { wch: 20 }, // Colonna A
+        { wch: 40 }, // Colonna B
+        { wch: 30 }, // Colonna C
       ];
 
-      XLSX.utils.book_append_sheet(wb, formulaWS, "Formule");
+      XLSX.utils.book_append_sheet(wb, formulaWS, "Guida Calcoli");
     }
 
     // Sheet 4: Note Cliniche
