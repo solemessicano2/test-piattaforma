@@ -533,9 +533,15 @@ Status: Connection Test Successful`;
       });
     } catch (error) {
       console.error("Drive upload error:", error);
+
+      let errorMessage = error.message;
+      if (error.message.includes("Invalid JWT Signature") || error.message.includes("invalid_grant")) {
+        errorMessage = "Google Drive non configurato correttamente. Condividi la cartella 'Risultati' con: testtpiattaforma@upbeat-stratum-467311-g4.iam.gserviceaccount.com";
+      }
+
       toast({
         title: "❌ Errore Upload",
-        description: `Errore: ${error.message}`,
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
