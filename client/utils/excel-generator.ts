@@ -75,142 +75,108 @@ export class ExcelGenerator {
 
     XLSX.utils.book_append_sheet(wb, rawWS, "DatiGrezzi");
 
-    // Sheet 3: Calcoli con Formule FUNZIONANTI (se richiesto)
+    // Sheet 3: FORMULE CORRETTE (se richiesto)
     if (includeFormulas) {
-      const calcData = [
-        ["PID-5 CALCOLO AUTOMATICO CON FORMULE EXCEL"],
+      // Prima riorganizzare i dati in ordine sequenziale per le formule
+      const formulaData = [
+        ["PID-5 FORMULE CORRETTE E FUNZIONANTI"],
         [""],
-        ["FACCETTE CON FORMULE FUNZIONANTI"],
-        ["Faccetta", "Punteggio", "Formula utilizzata", "Items coinvolti"],
+        ["DATI PER FORMULE (ordinati per ID)"],
+        ["Riga", "ID Item", "Risposta", "Invertito?", "Valore Corretto"],
       ];
 
-      // Definire le faccette con i loro item (inclusi quelli da invertire)
-      const facetDefinitions = [
-        { name: "Anedonia", items: [2, 24, 27, 31, 125, 156, 158, 190] },
-        { name: "Ansia", items: [80, 94, 96, 97, 110, 111, 131, 142, 175] },
-        { name: "Labilità Emotiva", items: [7, 30, 149, 152, 166, 167, 169, 172] },
-        { name: "Angoscia di Separazione", items: [98, 103, 113, 120, 146, 162, 180, 194] },
-        { name: "Ritiro", items: [8, 33, 70, 116, 121, 168, 181, 218] },
-        { name: "Evitamento dell'Intimità", items: [6, 53, 76, 122, 145, 155, 198, 213] },
-        { name: "Manipolatorietà", items: [19, 35, 44, 64, 87, 115, 137] },
-        { name: "Inganno", items: [60, 90, 109, 128, 153, 179, 199] },
-        { name: "Grandiosità", items: [29, 39, 66, 84, 134, 171, 197] },
-        { name: "Irresponsabilità", items: [3, 28, 46, 65, 104, 119, 177] },
-        { name: "Impulsività", items: [5, 17, 18, 23, 59, 205] },
-        { name: "Distraibilità", items: [9, 45, 67, 85, 126, 178, 220] },
-      ];
-
+      // Ordinare gli item per ID e creare riferimenti fissi
+      const sortedItems = Object.entries(answers).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
       const reversedItems = [7, 30, 35, 58, 87, 90, 96, 97, 98, 131, 142, 155, 164, 177, 210, 215];
 
-      // Creare un mapping degli item alle righe nel foglio "Dati Grezzi"
-      const sortedAnswers = Object.entries(answers).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
-      const itemToRowMap = new Map();
-      sortedAnswers.forEach(([itemId, answer], index) => {
-        itemToRowMap.set(parseInt(itemId), index + 3); // Riga 3+ nei "Dati Grezzi"
-      });
+      // Creare i dati con formule per inversione
+      sortedItems.forEach(([itemId, answer], index) => {
+        const row = index + 5; // Righe 5+
+        const isReversed = reversedItems.includes(parseInt(itemId));
 
-      // Per ogni faccetta, creare una riga con la formula MEDIA() funzionante
-      facetDefinitions.forEach((facet, index) => {
-        const row = index + 5; // Inizia dalla riga 5
-
-        // Costruire la formula che pesca dal foglio "DatiGrezzi"
-        const formulaParts = facet.items.map(itemId => {
-          const itemRow = itemToRowMap.get(itemId);
-          if (!itemRow) return null; // Item non trovato
-
-          if (reversedItems.includes(itemId)) {
-            // Se l'item deve essere invertito: 3 - valore
-            return `(3-DatiGrezzi.B${itemRow})`;
-          } else {
-            // Item normale
-            return `DatiGrezzi.B${itemRow}`;
-          }
-        }).filter(Boolean); // Rimuove null
-
-        const formula = formulaParts.length > 0 ? `MEDIA(${formulaParts.join(";")})` : "N/D";
-        const itemsList = facet.items.join(", ");
-
-        calcData.push([
-          facet.name,
-          null, // Sarà riempito con la formula
-          formula,
-          itemsList
+        formulaData.push([
+          row,
+          parseInt(itemId),
+          parseInt(answer),
+          isReversed ? "SÌ" : "NO",
+          null // Sarà riempito con formula
         ]);
       });
 
-      const calcWS = XLSX.utils.aoa_to_sheet(calcData);
+      // Separatore per calcoli faccette
+      formulaData.push(
+        [""],
+        ["CALCOLO FACCETTE"],
+        ["Faccetta", "Punteggio", "Items utilizzati"]
+      );
 
-      // Aggiungere le formule effettive alle celle
-      facetDefinitions.forEach((facet, index) => {
+      // Definire faccette principali con items specifici
+      const mainFacets = [
+        { name: "Anedonia", items: [2, 24, 27, 31, 125, 156, 158, 190] },
+        { name: "Ansia", items: [80, 94, 96, 97, 110, 111, 131, 142, 175] },
+        { name: "Labilità Emotiva", items: [7, 30, 149, 152, 166, 167, 169, 172] },
+        { name: "Impulsività", items: [5, 17, 18, 23, 59, 205] },
+        { name: "Manipolazione", items: [19, 35, 44, 64, 87, 115, 137] }
+      ];
+
+      // Aggiungere le faccette alla tabella
+      mainFacets.forEach(facet => {
+        formulaData.push([
+          facet.name,
+          null, // Punteggio da calcolare con formula
+          facet.items.join(", ")
+        ]);
+      });
+
+      const formulaWS = XLSX.utils.aoa_to_sheet(formulaData);
+
+      // Aggiungere formule per inversione (colonna E)
+      sortedItems.forEach(([itemId, answer], index) => {
         const row = index + 5;
+        const isReversed = reversedItems.includes(parseInt(itemId));
 
-        // Costruire la formula che pesca dal foglio "DatiGrezzi"
-        const formulaParts = facet.items.map(itemId => {
-          const itemRow = itemToRowMap.get(itemId);
-          if (!itemRow) return null;
-
-          if (reversedItems.includes(itemId)) {
-            // Se l'item deve essere invertito: 3 - valore
-            return `(3-DatiGrezzi.B${itemRow})`;
-          } else {
-            // Item normale
-            return `DatiGrezzi.B${itemRow}`;
-          }
-        }).filter(Boolean); // Rimuove null
-
-        if (formulaParts.length > 0) {
-          const formula = `MEDIA(${formulaParts.join(";")})`;
-          calcWS[`B${row}`] = { f: formula };
+        if (isReversed) {
+          // Formula per inversione: 3 - valore originale
+          formulaWS[`E${row}`] = { f: `3-C${row}` };
+        } else {
+          // Formula per copiare il valore: = valore originale
+          formulaWS[`E${row}`] = { f: `C${row}` };
         }
       });
 
-      // Aggiungere sezione domini
-      const domainStartRow = facetDefinitions.length + 8;
-      const domainData = [
-        [""],
-        ["DOMINI DSM-5 CON FORMULE"],
-        ["Dominio", "Punteggio", "Formula", "Faccette coinvolte"],
-        ["Affettività Negativa", null, "=MEDIA(B5;B6;B8)", "Anedonia + Ansia + Labilità"],
-        ["Distacco", null, "=MEDIA(B5;B9;B10)", "Anedonia + Ritiro + Evitamento"],
-        ["Antagonismo", null, "=MEDIA(B11;B12;B13)", "Manipolazione + Inganno + Grandiosità"],
-        ["Disinibizione", null, "=MEDIA(B14;B15;B16)", "Irresponsabilità + Impulsività + Distraibilità"],
-        ["Psicoticismo", null, "=MEDIA(B17;B18;B19)", "Convinzioni + Eccentricità + Disregolazione"],
-      ];
+      // Calcolare la riga di inizio per le faccette
+      const facetStartRow = sortedItems.length + 9;
 
-      // Aggiungere i domini al foglio
-      domainData.forEach((row, i) => {
-        const excelRow = domainStartRow + i;
-        row.forEach((cell, j) => {
-          const excelCol = String.fromCharCode(65 + j);
-          if (cell !== null) {
-            calcWS[`${excelCol}${excelRow}`] = { v: cell };
+      // Aggiungere formule per le faccette
+      mainFacets.forEach((facet, index) => {
+        const row = facetStartRow + index;
+
+        // Trovare le righe corrispondenti agli item della faccetta
+        const cellRefs = facet.items.map(itemId => {
+          const itemIndex = sortedItems.findIndex(([id]) => parseInt(id) === itemId);
+          if (itemIndex >= 0) {
+            return `E${itemIndex + 5}`; // Punta alla colonna E (valore corretto)
           }
-        });
-      });
+          return null;
+        }).filter(Boolean);
 
-      // Aggiungere le formule dei domini
-      const domainFormulas = [
-        `MEDIA(B5;B6;B8)`,   // Affettività Negativa
-        `MEDIA(B5;B9;B10)`,  // Distacco
-        `MEDIA(B11;B12;B13)`, // Antagonismo
-        `MEDIA(B14;B15;B16)`, // Disinibizione
-        `MEDIA(B17;B18;B19)`  // Psicoticismo (riferimenti da aggiustare)
-      ];
-
-      domainFormulas.forEach((formula, i) => {
-        const row = domainStartRow + 3 + i;
-        calcWS[`B${row}`] = { f: formula };
+        if (cellRefs.length > 0) {
+          // Formula MEDIA con riferimenti diretti alle celle
+          const formula = `MEDIA(${cellRefs.join(";")})`;
+          formulaWS[`B${row}`] = { f: formula };
+        }
       });
 
       // Impostare larghezze colonne
-      calcWS["!cols"] = [
-        { wch: 25 }, // Colonna A - Nome
-        { wch: 15 }, // Colonna B - Punteggio
-        { wch: 40 }, // Colonna C - Formula
-        { wch: 30 }, // Colonna D - Items
+      formulaWS["!cols"] = [
+        { wch: 8 },  // Riga
+        { wch: 12 }, // ID Item
+        { wch: 12 }, // Risposta
+        { wch: 12 }, // Invertito?
+        { wch: 15 }, // Valore Corretto
       ];
 
-      XLSX.utils.book_append_sheet(wb, calcWS, "Calcoli Automatici");
+      XLSX.utils.book_append_sheet(wb, formulaWS, "Formule");
     }
 
     // Sheet 4: Note Cliniche
