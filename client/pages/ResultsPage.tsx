@@ -466,27 +466,8 @@ export default function ResultsPage() {
           </div>
         )}
 
-        {/* Auto-upload Banner */}
-        {answers && isUploading && (
-          <div className="mb-8">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <Cloud className="w-6 h-6 text-blue-600 animate-pulse" />
-                <div>
-                  <h3 className="text-blue-800 font-semibold">
-                    Upload Automatico in Corso
-                  </h3>
-                  <p className="text-blue-700 text-sm">
-                    I risultati vengono salvati automaticamente su Google Drive...
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Success Banner */}
-        {answers && !isUploading && (
+        {answers && (
           <div className="mb-8">
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-center space-x-3">
@@ -496,7 +477,7 @@ export default function ResultsPage() {
                     Risultati Test Completati
                   </h3>
                   <p className="text-green-700 text-sm">
-                    Upload automatico attivo! Puoi anche scaricare PDF e Excel localmente
+                    Puoi scaricare i risultati in formato PDF e Excel
                   </p>
                 </div>
               </div>
