@@ -73,7 +73,7 @@ export class ExcelGenerator {
       { wch: 20 },
     ];
 
-    XLSX.utils.book_append_sheet(wb, rawWS, "Dati Grezzi");
+    XLSX.utils.book_append_sheet(wb, rawWS, "DatiGrezzi");
 
     // Sheet 3: Calcoli con Formule FUNZIONANTI (se richiesto)
     if (includeFormulas) {
