@@ -146,8 +146,8 @@ export class ExcelGenerator {
 
         // Costruire la formula che pesca dal foglio "Dati Grezzi"
         const formulaParts = facet.items.map(itemId => {
-          // Trovare la riga dell'item nel foglio "Dati Grezzi"
-          const itemRow = Object.keys(answers).indexOf(itemId.toString()) + 3;
+          const itemRow = itemToRowMap.get(itemId);
+          if (!itemRow) return null;
 
           if (reversedItems.includes(itemId)) {
             // Se l'item deve essere invertito: 3 - valore
@@ -156,7 +156,7 @@ export class ExcelGenerator {
             // Item normale
             return `'Dati Grezzi'.B${itemRow}`;
           }
-        }).filter(part => part.includes('B')); // Solo celle valide
+        }).filter(Boolean); // Rimuove null
 
         if (formulaParts.length > 0) {
           const formula = `MEDIA(${formulaParts.join(";")})`;
