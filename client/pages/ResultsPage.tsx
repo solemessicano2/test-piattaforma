@@ -13,6 +13,10 @@ import {
   processOfficialPID5Results,
   type PID5OfficialProfile,
 } from "@/utils/pid5-official-scoring";
+import {
+  DASS21Scoring,
+  type DASS21Profile,
+} from "@/utils/dass21-scoring";
 import { ExcelGenerator } from "@/utils/excel-generator";
 import {
   ArrowLeft,
