@@ -14,10 +14,7 @@ import {
   processOfficialPID5Results,
   type PID5OfficialProfile,
 } from "@/utils/pid5-official-scoring";
-import {
-  DASS21Scoring,
-  type DASS21Profile,
-} from "@/utils/dass21-scoring";
+import { DASS21Scoring, type DASS21Profile } from "@/utils/dass21-scoring";
 import { ExcelGenerator } from "@/utils/excel-generator";
 import { DASS21ExcelGenerator } from "@/utils/dass21-excel-generator";
 import {
@@ -37,8 +34,12 @@ export default function ResultsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(true);
-  const [pid5Profile, setPid5Profile] = useState<PID5OfficialProfile | null>(null);
-  const [dass21Profile, setDass21Profile] = useState<DASS21Profile | null>(null);
+  const [pid5Profile, setPid5Profile] = useState<PID5OfficialProfile | null>(
+    null,
+  );
+  const [dass21Profile, setDass21Profile] = useState<DASS21Profile | null>(
+    null,
+  );
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Get data from navigation state
@@ -119,8 +120,6 @@ export default function ResultsPage() {
       </div>
     );
   }
-
-
 
   const getRiskColor = (severity: string) => {
     switch (severity) {
@@ -259,7 +258,9 @@ export default function ResultsPage() {
         </div>
 
         <h2>Risultati per Sottoscala</h2>
-        ${Object.entries(profile.subscales).map(([key, subscale]) => `
+        ${Object.entries(profile.subscales)
+          .map(
+            ([key, subscale]) => `
           <div class="subscale-section">
             <div class="subscale-title">${subscale.name}</div>
             <div class="score">${subscale.score}</div>
@@ -268,21 +269,31 @@ export default function ResultsPage() {
             <p><strong>Interpretazione:</strong> ${subscale.interpretation}</p>
             <p><small>Item utilizzati: ${subscale.items.join(", ")}</small></p>
           </div>
-        `).join("")}
+        `,
+          )
+          .join("")}
 
-        ${profile.clinicalNotes.length > 0 ? `
+        ${
+          profile.clinicalNotes.length > 0
+            ? `
           <div class="note-section">
             <h2>Note Cliniche</h2>
-            ${profile.clinicalNotes.map(note => `<p>• ${note}</p>`).join("")}
+            ${profile.clinicalNotes.map((note) => `<p>• ${note}</p>`).join("")}
           </div>
-        ` : ""}
+        `
+            : ""
+        }
 
-        ${profile.recommendations.length > 0 ? `
+        ${
+          profile.recommendations.length > 0
+            ? `
           <div class="recommendations">
             <h2>Raccomandazioni</h2>
-            ${profile.recommendations.map(rec => `<div class="recommendation">${rec}</div>`).join("")}
+            ${profile.recommendations.map((rec) => `<div class="recommendation">${rec}</div>`).join("")}
           </div>
-        ` : ""}
+        `
+            : ""
+        }
 
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
           <p><strong>Importante:</strong> Questi risultati sono generati automaticamente e non sostituiscono una valutazione clinica professionale. Consultare sempre uno psicologo qualificato per interpretazione e pianificazione terapeutica.</p>
@@ -293,8 +304,10 @@ export default function ResultsPage() {
     `;
   };
 
-  const generatePID5HTML = (profile: PID5OfficialProfile, currentDate: string) => {
-
+  const generatePID5HTML = (
+    profile: PID5OfficialProfile,
+    currentDate: string,
+  ) => {
     return `
       <!DOCTYPE html>
       <html>
@@ -407,7 +420,8 @@ export default function ResultsPage() {
 
         toast({
           title: "Excel DASS-21 Scaricato",
-          description: "Il file Excel con i risultati DASS-21 è stato scaricato",
+          description:
+            "Il file Excel con i risultati DASS-21 è stato scaricato",
         });
       } else if (pid5Profile) {
         // PID-5 Excel export
@@ -466,10 +480,6 @@ export default function ResultsPage() {
       });
     }
   };
-
-
-
-
 
   // Show password protection first
   if (!isAuthenticated) {
@@ -536,7 +546,6 @@ export default function ResultsPage() {
             </Button>
 
             <div className="flex items-center space-x-3">
-
               <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF

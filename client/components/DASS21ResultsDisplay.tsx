@@ -2,14 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  TrendingUp, 
-  Heart, 
-  Brain, 
-  Zap, 
-  AlertTriangle, 
+import {
+  TrendingUp,
+  Heart,
+  Brain,
+  Zap,
+  AlertTriangle,
   CheckCircle,
-  BarChart3 
+  BarChart3,
 } from "lucide-react";
 import type { DASS21Profile } from "@/utils/dass21-scoring";
 
@@ -17,7 +17,9 @@ interface DASS21ResultsDisplayProps {
   profile: DASS21Profile;
 }
 
-export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayProps) {
+export default function DASS21ResultsDisplay({
+  profile,
+}: DASS21ResultsDisplayProps) {
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
       case "normale":
@@ -77,7 +79,8 @@ export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayPr
                 {profile.testInfo.name}
               </h2>
               <p className="text-blue-700 text-sm">
-                Completato il {profile.testInfo.date} • Durata: {profile.testInfo.duration}
+                Completato il {profile.testInfo.date} • Durata:{" "}
+                {profile.testInfo.duration}
               </p>
             </div>
           </CardTitle>
@@ -97,15 +100,13 @@ export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayPr
             <div className="text-4xl font-bold text-indigo-900">
               {profile.totalScore.score}
             </div>
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className={`text-lg px-4 py-2 ${getSeverityColor(profile.totalScore.severity)}`}
             >
               {profile.totalScore.severity}
             </Badge>
-            <p className="text-gray-600">
-              {profile.totalScore.interpretation}
-            </p>
+            <p className="text-gray-600">{profile.totalScore.interpretation}</p>
           </div>
         </CardContent>
       </Card>
@@ -116,10 +117,15 @@ export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayPr
           <Card key={key} className="relative overflow-hidden">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${
-                  key === 'depression' ? 'bg-red-100' :
-                  key === 'anxiety' ? 'bg-yellow-100' : 'bg-purple-100'
-                }`}>
+                <div
+                  className={`p-2 rounded-lg ${
+                    key === "depression"
+                      ? "bg-red-100"
+                      : key === "anxiety"
+                        ? "bg-yellow-100"
+                        : "bg-purple-100"
+                  }`}
+                >
                   {getSubscaleIcon(subscale.name)}
                 </div>
                 <div>
@@ -136,8 +142,8 @@ export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayPr
                   {subscale.score}
                 </div>
                 <div className="flex items-center justify-center space-x-2 mt-2">
-                  <Badge 
-                    variant="secondary" 
+                  <Badge
+                    variant="secondary"
                     className={`${getSeverityColor(subscale.severity)} flex items-center space-x-1`}
                   >
                     {getSeverityIcon(subscale.severity)}
@@ -145,7 +151,7 @@ export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayPr
                   </Badge>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Percentile</span>
@@ -153,11 +159,9 @@ export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayPr
                 </div>
                 <Progress value={subscale.percentile || 0} className="h-2" />
               </div>
-              
-              <p className="text-sm text-gray-600">
-                {subscale.interpretation}
-              </p>
-              
+
+              <p className="text-sm text-gray-600">{subscale.interpretation}</p>
+
               <details className="text-xs">
                 <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
                   Item utilizzati
@@ -225,16 +229,19 @@ export default function DASS21ResultsDisplay({ profile }: DASS21ResultsDisplayPr
         <CardContent>
           <div className="text-sm text-gray-600 space-y-2">
             <p>
-              <strong>DASS-21</strong> è una versione ridotta della Depression Anxiety Stress Scale,
-              validata per la popolazione italiana (Bottesi et al., 2015).
+              <strong>DASS-21</strong> è una versione ridotta della Depression
+              Anxiety Stress Scale, validata per la popolazione italiana
+              (Bottesi et al., 2015).
             </p>
             <p>
-              <strong>Interpretazione:</strong> I punteggi sono confrontati con norme di popolazione
-              generale italiana. Punteggi elevati indicano livelli significativi di distress.
+              <strong>Interpretazione:</strong> I punteggi sono confrontati con
+              norme di popolazione generale italiana. Punteggi elevati indicano
+              livelli significativi di distress.
             </p>
             <p>
-              <strong>Uso clinico:</strong> Questo strumento è utile per screening e monitoraggio,
-              ma non sostituisce una valutazione clinica completa.
+              <strong>Uso clinico:</strong> Questo strumento è utile per
+              screening e monitoraggio, ma non sostituisce una valutazione
+              clinica completa.
             </p>
           </div>
         </CardContent>

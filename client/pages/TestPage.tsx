@@ -36,7 +36,8 @@ export default function TestPage() {
       };
     } else {
       // PID-5 test (default for testId "1" or any other)
-      const pid5Data = PID5_COMPLETE &&
+      const pid5Data =
+        PID5_COMPLETE &&
         PID5_COMPLETE.items &&
         Array.isArray(PID5_COMPLETE.items) &&
         PID5_COMPLETE.items.length === 220
@@ -260,31 +261,39 @@ export default function TestPage() {
               onValueChange={(value) => handleAnswer(currentQ.id, value)}
               className="space-y-4 mt-0.5"
             >
-              {(testData.scaleLikert || testData.scaleOptions || []).map((option, index) => {
-                const optionText = typeof option === 'string' ? option : option?.description || option?.label;
-                const optionValue = typeof option === 'string' ? index.toString() : option?.value?.toString() || index.toString();
+              {(testData.scaleLikert || testData.scaleOptions || []).map(
+                (option, index) => {
+                  const optionText =
+                    typeof option === "string"
+                      ? option
+                      : option?.description || option?.label;
+                  const optionValue =
+                    typeof option === "string"
+                      ? index.toString()
+                      : option?.value?.toString() || index.toString();
 
-                return (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all cursor-pointer"
-                  >
-                    <RadioGroupItem
-                      value={optionValue}
-                      id={`option-${index}`}
-                    />
-                    <Label
-                      htmlFor={`option-${index}`}
-                      className="flex-1 cursor-pointer text-gray-700 leading-relaxed"
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all cursor-pointer"
                     >
-                      <span className="font-medium text-blue-600 mr-2">
-                        {typeof option === 'string' ? index : option?.value}
-                      </span>
-                      {optionText}
-                    </Label>
-                  </div>
-                );
-              })}
+                      <RadioGroupItem
+                        value={optionValue}
+                        id={`option-${index}`}
+                      />
+                      <Label
+                        htmlFor={`option-${index}`}
+                        className="flex-1 cursor-pointer text-gray-700 leading-relaxed"
+                      >
+                        <span className="font-medium text-blue-600 mr-2">
+                          {typeof option === "string" ? index : option?.value}
+                        </span>
+                        {optionText}
+                      </Label>
+                    </div>
+                  );
+                },
+              )}
             </RadioGroup>
           </CardContent>
         </Card>

@@ -23,25 +23,31 @@ export class DASS21ExcelGenerator {
         profile.subscales.depression.score,
         profile.subscales.depression.severity,
         profile.subscales.depression.percentile + "°",
-        profile.subscales.depression.interpretation
+        profile.subscales.depression.interpretation,
       ],
       [
         "Ansia",
         profile.subscales.anxiety.score,
         profile.subscales.anxiety.severity,
         profile.subscales.anxiety.percentile + "°",
-        profile.subscales.anxiety.interpretation
+        profile.subscales.anxiety.interpretation,
       ],
       [
         "Stress",
         profile.subscales.stress.score,
         profile.subscales.stress.severity,
         profile.subscales.stress.percentile + "°",
-        profile.subscales.stress.interpretation
+        profile.subscales.stress.interpretation,
       ],
       [""],
       ["PUNTEGGIO TOTALE"],
-      ["Totale", profile.totalScore.score, profile.totalScore.severity, "", profile.totalScore.interpretation],
+      [
+        "Totale",
+        profile.totalScore.score,
+        profile.totalScore.severity,
+        "",
+        profile.totalScore.interpretation,
+      ],
     ];
 
     const summaryWS = XLSX.utils.aoa_to_sheet(summaryData);
@@ -63,7 +69,7 @@ export class DASS21ExcelGenerator {
         parseInt(itemId),
         answer,
         this.getAnswerText(answer),
-        this.getItemSubscale(parseInt(itemId))
+        this.getItemSubscale(parseInt(itemId)),
       ]),
     ];
 

@@ -23,8 +23,7 @@ export default function Index() {
   const [activeTests] = useState([
     {
       id: 1,
-      title:
-        "PID-5 - Inventario della Personalità per DSM-5",
+      title: "PID-5 - Inventario della Personalità per DSM-5",
       description:
         "Strumento completo di valutazione dei tratti di personalità maladattivi con 220 item secondo il modello dimensionale del DSM-5",
       duration: "40-45 min",
@@ -35,8 +34,7 @@ export default function Index() {
     },
     {
       id: 2,
-      title:
-        "DASS-21 - Depression Anxiety Stress Scale",
+      title: "DASS-21 - Depression Anxiety Stress Scale",
       description:
         "Scala per la valutazione rapida di depressione, ansia e stress negli ultimi 7 giorni con norme popolazione generale e clinica",
       duration: "5-10 min",
