@@ -358,22 +358,27 @@ export default function ResultsPage() {
   };
 
   const handleExportWithFormulas = () => {
-    if (!pid5Profile) return;
-
     try {
-      const workbook = ExcelGenerator.generateResultsWorkbook({
-        profile: pid5Profile,
-        answers: currentAnswers,
-        includeFormulas: true,
-      });
+      if (testId === "2" && dass21Profile) {
+        // DASS-21 non ha formule complesse, usa il generatore normale
+        handleExportToExcel();
+        return;
+      } else if (pid5Profile) {
+        // PID-5 Excel con formule
+        const workbook = ExcelGenerator.generateResultsWorkbook({
+          profile: pid5Profile,
+          answers: currentAnswers,
+          includeFormulas: true,
+        });
 
-      const fileName = `PID5_Con_Formule_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
-      ExcelGenerator.downloadExcel(fileName, workbook);
+        const fileName = `PID5_Con_Formule_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
+        ExcelGenerator.downloadExcel(fileName, workbook);
 
-      toast({
-        title: "Excel con Formule Scaricato",
-        description: "Il file Excel con formule di calcolo è stato scaricato",
-      });
+        toast({
+          title: "Excel con Formule Scaricato",
+          description: "Il file Excel con formule di calcolo è stato scaricato",
+        });
+      }
     } catch (error) {
       console.error("Excel with formulas export error:", error);
       toast({
