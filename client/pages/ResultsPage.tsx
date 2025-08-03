@@ -72,15 +72,27 @@ export default function ResultsPage() {
         if (!answers) {
           // Generate simple demo data if no answers provided
           answersToProcess = {};
-          for (let i = 1; i <= 220; i++) {
+          const questionsCount = testId === "2" ? 21 : 220;
+          for (let i = 1; i <= questionsCount; i++) {
             // Simple random pattern
             const score = Math.floor(Math.random() * 4);
             answersToProcess[i] = score.toString();
           }
         }
 
-        const profile = processOfficialPID5Results(answersToProcess);
-        setPid5Profile(profile);
+        if (testId === "2") {
+          // Process DASS-21 results
+          const numericAnswers: Record<number, number> = {};
+          Object.entries(answersToProcess).forEach(([key, value]) => {
+            numericAnswers[parseInt(key)] = parseInt(value);
+          });
+          const profile = DASS21Scoring.calculateProfile(numericAnswers);
+          setDass21Profile(profile);
+        } else {
+          // Process PID-5 results (default)
+          const profile = processOfficialPID5Results(answersToProcess);
+          setPid5Profile(profile);
+        }
       } catch (error) {
         console.error("Error processing results:", error);
       }
