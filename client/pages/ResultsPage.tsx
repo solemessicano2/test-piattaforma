@@ -19,6 +19,7 @@ import {
   type DASS21Profile,
 } from "@/utils/dass21-scoring";
 import { ExcelGenerator } from "@/utils/excel-generator";
+import { DASS21ExcelGenerator } from "@/utils/dass21-excel-generator";
 import {
   ArrowLeft,
   Download,
