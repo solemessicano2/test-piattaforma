@@ -311,22 +311,42 @@ export default function ResultsPage() {
   };
 
   const handleExportToExcel = () => {
-    if (!pid5Profile) return;
-
     try {
-      const workbook = ExcelGenerator.generateResultsWorkbook({
-        profile: pid5Profile,
-        answers: currentAnswers,
-        includeFormulas: false,
-      });
+      if (testId === "2" && dass21Profile) {
+        // DASS-21 Excel export
+        const numericAnswers: Record<number, number> = {};
+        Object.entries(currentAnswers).forEach(([key, value]) => {
+          numericAnswers[parseInt(key)] = parseInt(value);
+        });
 
-      const fileName = `PID5_Risultati_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
-      ExcelGenerator.downloadExcel(fileName, workbook);
+        const workbook = DASS21ExcelGenerator.generateResultsWorkbook({
+          profile: dass21Profile,
+          answers: numericAnswers,
+        });
 
-      toast({
-        title: "Excel Scaricato",
-        description: "Il file Excel con i risultati è stato scaricato",
-      });
+        const fileName = `DASS21_Risultati_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
+        DASS21ExcelGenerator.downloadExcel(fileName, workbook);
+
+        toast({
+          title: "Excel DASS-21 Scaricato",
+          description: "Il file Excel con i risultati DASS-21 è stato scaricato",
+        });
+      } else if (pid5Profile) {
+        // PID-5 Excel export
+        const workbook = ExcelGenerator.generateResultsWorkbook({
+          profile: pid5Profile,
+          answers: currentAnswers,
+          includeFormulas: false,
+        });
+
+        const fileName = `PID5_Risultati_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`;
+        ExcelGenerator.downloadExcel(fileName, workbook);
+
+        toast({
+          title: "Excel PID-5 Scaricato",
+          description: "Il file Excel con i risultati PID-5 è stato scaricato",
+        });
+      }
     } catch (error) {
       console.error("Excel export error:", error);
       toast({
