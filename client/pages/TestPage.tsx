@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { PID5_COMPLETE, type PID5Item } from "@/data/pid5-complete";
 import { PID5_FALLBACK } from "@/data/pid5-fallback";
+import { dass21Test, type DASS21Item } from "@/data/dass21-test";
 
 export default function TestPage() {
   const { testId } = useParams();
