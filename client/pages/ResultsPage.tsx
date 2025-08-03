@@ -45,15 +45,16 @@ export default function ResultsPage() {
   // Prepare current data (must be before functions that use it)
   const demoAnswers: Record<number, string> = {};
   if (!answers) {
-    for (let i = 1; i <= 220; i++) {
+    const questionsCount = testId === "2" ? 21 : 220; // DASS-21 vs PID-5
+    for (let i = 1; i <= questionsCount; i++) {
       demoAnswers[i] = Math.floor(Math.random() * 4).toString();
     }
   }
 
   const currentAnswers = answers || demoAnswers;
   const currentTestData = testData || {
-    title: "PID-5 Demo",
-    items: Array.from({ length: 220 }, (_, i) => ({
+    title: testId === "2" ? "DASS-21 Demo" : "PID-5 Demo",
+    items: Array.from({ length: testId === "2" ? 21 : 220 }, (_, i) => ({
       id: i + 1,
       text: `Domanda ${i + 1}`,
       domain: "Demo",
