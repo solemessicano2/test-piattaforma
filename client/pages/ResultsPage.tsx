@@ -201,21 +201,99 @@ export default function ResultsPage() {
   };
 
   const generatePrintableHTML = () => {
-    if (!pid5Profile) {
-      console.error("pid5Profile is null in generatePrintableHTML");
+    const currentDate = new Date().toLocaleDateString("it-IT");
+
+    if (testId === "2" && dass21Profile) {
+      return generateDASS21HTML(dass21Profile, currentDate);
+    } else if (pid5Profile) {
+      return generatePID5HTML(pid5Profile, currentDate);
+    } else {
       return `
         <!DOCTYPE html>
         <html>
-        <head><title>PID-5 Report - Errore</title></head>
+        <head><title>Report - Errore</title></head>
         <body>
           <h1>Errore nel generare il report</h1>
-          <p>I dati del profilo PID-5 non sono disponibili.</p>
+          <p>I dati del profilo non sono disponibili.</p>
         </body>
         </html>
       `;
     }
+  };
 
-    const currentDate = new Date().toLocaleDateString("it-IT");
+  const generateDASS21HTML = (profile: DASS21Profile, currentDate: string) => {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>DASS-21 Risultati</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+          .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3B82F6; padding-bottom: 20px; }
+          .subscale-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+          .subscale-title { font-size: 18px; font-weight: bold; color: #1F2937; margin-bottom: 10px; }
+          .score { font-size: 24px; font-weight: bold; color: #3B82F6; }
+          .severity { padding: 5px 10px; border-radius: 3px; color: white; }
+          .severity.normale { background-color: #10B981; }
+          .severity.lieve { background-color: #F59E0B; }
+          .severity.moderato { background-color: #EF4444; }
+          .severity.severo { background-color: #DC2626; }
+          .severity.estremamente-severo { background-color: #7F1D1D; }
+          .note-section { margin-top: 30px; padding: 15px; background-color: #F3F4F6; border-radius: 5px; }
+          .recommendations { margin-top: 20px; }
+          .recommendation { margin: 10px 0; padding: 10px; background-color: #ECFDF5; border-left: 4px solid #10B981; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>DASS-21 - Depression Anxiety Stress Scale</h1>
+          <p>Risultati Elaborazione - ${currentDate}</p>
+        </div>
+
+        <div class="subscale-section">
+          <div class="subscale-title">Punteggio Totale</div>
+          <div class="score">${profile.totalScore.score}</div>
+          <span class="severity ${profile.totalScore.severity.toLowerCase().replace(" ", "-")}">${profile.totalScore.severity}</span>
+          <p>${profile.totalScore.interpretation}</p>
+        </div>
+
+        <h2>Risultati per Sottoscala</h2>
+        ${Object.entries(profile.subscales).map(([key, subscale]) => `
+          <div class="subscale-section">
+            <div class="subscale-title">${subscale.name}</div>
+            <div class="score">${subscale.score}</div>
+            <span class="severity ${subscale.severity.toLowerCase().replace(" ", "-")}">${subscale.severity}</span>
+            <p><strong>Percentile:</strong> ${subscale.percentile}°</p>
+            <p><strong>Interpretazione:</strong> ${subscale.interpretation}</p>
+            <p><small>Item utilizzati: ${subscale.items.join(", ")}</small></p>
+          </div>
+        `).join("")}
+
+        ${profile.clinicalNotes.length > 0 ? `
+          <div class="note-section">
+            <h2>Note Cliniche</h2>
+            ${profile.clinicalNotes.map(note => `<p>• ${note}</p>`).join("")}
+          </div>
+        ` : ""}
+
+        ${profile.recommendations.length > 0 ? `
+          <div class="recommendations">
+            <h2>Raccomandazioni</h2>
+            ${profile.recommendations.map(rec => `<div class="recommendation">${rec}</div>`).join("")}
+          </div>
+        ` : ""}
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
+          <p><strong>Importante:</strong> Questi risultati sono generati automaticamente e non sostituiscono una valutazione clinica professionale. Consultare sempre uno psicologo qualificato per interpretazione e pianificazione terapeutica.</p>
+          <p>Report DASS-21 generato il ${currentDate} dal sistema TestPro</p>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+
+  const generatePID5HTML = (profile: PID5OfficialProfile, currentDate: string) => {
 
     return `
       <!DOCTYPE html>
