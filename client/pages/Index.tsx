@@ -24,14 +24,26 @@ export default function Index() {
     {
       id: 1,
       title:
-        "PID-5 - Inventario della Personalità per DSM-5 (Versione Completa)",
+        "PID-5 - Inventario della Personalità per DSM-5",
       description:
         "Strumento completo di valutazione dei tratti di personalità maladattivi con 220 item secondo il modello dimensionale del DSM-5",
       duration: "40-45 min",
       questions: 220,
       completions: 847,
-      category: "Clinico",
+      category: "Personalità",
       difficulty: "Professionale",
+    },
+    {
+      id: 2,
+      title:
+        "DASS-21 - Depression Anxiety Stress Scale",
+      description:
+        "Scala per la valutazione rapida di depressione, ansia e stress negli ultimi 7 giorni con norme popolazione generale e clinica",
+      duration: "5-10 min",
+      questions: 21,
+      completions: 1243,
+      category: "Emozioni",
+      difficulty: "Standard",
     },
   ]);
 
