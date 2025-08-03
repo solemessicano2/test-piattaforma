@@ -48,9 +48,9 @@ export default function Index() {
   ]);
 
   const stats = [
-    { icon: ClipboardList, label: "Test Disponibile", value: "PID-5" },
+    { icon: ClipboardList, label: "Test Disponibili", value: "2" },
     { icon: Users, label: "Utenti Attivi", value: "2.1K" },
-    { icon: BarChart3, label: "Test Completati", value: "847" },
+    { icon: BarChart3, label: "Test Completati", value: "2.1K" },
     { icon: CheckCircle, label: "Accuratezza", value: "98%" },
   ];
 
