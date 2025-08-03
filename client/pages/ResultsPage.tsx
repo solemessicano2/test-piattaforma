@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import PasswordProtection from "@/components/PasswordProtection";
 import OfficialResultsDisplay from "@/components/OfficialResultsDisplay";
+import DASS21ResultsDisplay from "@/components/DASS21ResultsDisplay";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
