@@ -133,8 +133,8 @@ export default function Index() {
                     <Badge
                       variant="secondary"
                       className={`${
-                        test.category === "Clinico"
-                          ? "bg-red-100 text-red-800"
+                        test.category === "Personalità"
+                          ? "bg-purple-100 text-purple-800"
                           : test.category === "Emozioni"
                             ? "bg-green-100 text-green-800"
                             : "bg-orange-100 text-orange-800"
