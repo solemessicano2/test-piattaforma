@@ -35,9 +35,8 @@ export default function ResultsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(true);
-  const [pid5Profile, setPid5Profile] = useState<PID5OfficialProfile | null>(
-    null,
-  );
+  const [pid5Profile, setPid5Profile] = useState<PID5OfficialProfile | null>(null);
+  const [dass21Profile, setDass21Profile] = useState<DASS21Profile | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Get data from navigation state
