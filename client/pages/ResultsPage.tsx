@@ -571,11 +571,21 @@ export default function ResultsPage() {
           </Card>
         )}
 
-        {/* Risultati Ufficiali PID-5 secondo DSM-5 */}
-        <OfficialResultsDisplay
-          profile={pid5Profile}
-          answers={currentAnswers}
-        />
+        {/* Results Display - Show appropriate component based on test type */}
+        {testId === "2" && dass21Profile ? (
+          <DASS21ResultsDisplay profile={dass21Profile} />
+        ) : pid5Profile ? (
+          <OfficialResultsDisplay
+            profile={pid5Profile}
+            answers={currentAnswers}
+          />
+        ) : (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-600">Nessun risultato disponibile</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
