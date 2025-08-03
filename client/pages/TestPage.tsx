@@ -23,17 +23,35 @@ export default function TestPage() {
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeRemaining, setTimeRemaining] = useState(2700); // 45 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Use complete 220-item PID-5 test with fallback safety
-  const testData =
-    PID5_COMPLETE &&
-    PID5_COMPLETE.items &&
-    Array.isArray(PID5_COMPLETE.items) &&
-    PID5_COMPLETE.items.length === 220
-      ? PID5_COMPLETE
-      : PID5_FALLBACK;
+  // Determine which test to use based on testId
+  const getTestData = () => {
+    if (testId === "2") {
+      // DASS-21 test
+      return {
+        ...dass21Test,
+        items: dass21Test.items,
+        duration: 600, // 10 minutes in seconds
+      };
+    } else {
+      // PID-5 test (default for testId "1" or any other)
+      const pid5Data = PID5_COMPLETE &&
+        PID5_COMPLETE.items &&
+        Array.isArray(PID5_COMPLETE.items) &&
+        PID5_COMPLETE.items.length === 220
+          ? PID5_COMPLETE
+          : PID5_FALLBACK;
+
+      return {
+        ...pid5Data,
+        duration: 2700, // 45 minutes in seconds
+      };
+    }
+  };
+
+  const testData = getTestData();
+  const [timeRemaining, setTimeRemaining] = useState(testData.duration);
 
   // Debug log to verify which dataset is being used
   console.log(
